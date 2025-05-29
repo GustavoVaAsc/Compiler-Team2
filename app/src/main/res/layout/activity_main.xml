@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
+
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/editor_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <ScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/line_numbers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="?android:textColorSecondary"
+                    android:textSize="14sp"
+                    android:textIsSelectable="false"
+                    android:lineSpacingExtra="4dp"
+                    android:paddingEnd="8dp"
+                    android:text="1"
+                    android:typeface="monospace" />
+            </ScrollView>
+
+            <ScrollView
+                android:id="@+id/vertical_scroll"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/code_input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="Write your code here..."
+                    android:background="@android:color/transparent"
+                    android:textColor="?android:textColorPrimary"
+                    android:textSize="14sp"
+                    android:inputType="textMultiLine"
+                    android:gravity="start|top"
+                    android:minLines="20"
+                    android:scrollbars="vertical"
+                    android:overScrollMode="always"
+                    android:lineSpacingExtra="4dp"
+                    android:padding="4dp"
+                    android:typeface="monospace"
+                    android:maxWidth="1000dp" />
+            </ScrollView>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:id="@+id/button_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/lex_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lex"
+            android:theme="@style/ButtonStyle" />
+
+        <Button
+            android:id="@+id/parse_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Parse"
+            android:layout_marginStart="16dp"
+            android:theme="@style/ButtonStyle" />
+
+        <Button
+            android:id="@+id/compile_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compile"
+            android:layout_marginStart="16dp"
+            android:theme="@style/ButtonStyle" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
