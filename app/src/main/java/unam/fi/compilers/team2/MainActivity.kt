@@ -3,6 +3,7 @@ package unam.fi.compilers.team2
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var codeInput: EditText
     private lateinit var lineNumbers: TextView
+    private lateinit var lexButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
