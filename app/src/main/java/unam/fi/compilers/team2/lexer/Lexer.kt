@@ -59,7 +59,6 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
 
 
     // Tokenize method
-
     public fun tokenize():List<Token>{
         val keywordRegex:Regex= Regex(this.buildRegex(keywords))
         val datatypeRegex:Regex= Regex(this.buildRegex(datatypes))

@@ -6,7 +6,7 @@ class Token (private val token_type:String,
              private val column:Int){
 
     override fun toString(): String {
-        return "Token of type "+token_type+" with value"+token_value+" at line: "+this.line+", Col: "+column
+        return "Token of type "+token_type+" with value "+token_value+" at line: "+this.line+", Col: "+column
     }
 
 }

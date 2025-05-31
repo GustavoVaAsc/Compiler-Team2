@@ -1,5 +1,6 @@
 package unam.fi.compilers.team2
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         codeInput = findViewById(R.id.code_input)
         lineNumbers = findViewById(R.id.line_numbers)
+        lexButton = findViewById(R.id.lex_button)
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
@@ -45,7 +47,24 @@ class MainActivity : AppCompatActivity() {
                 lineNumbers.text = numberedLines
             }
         })
+
+        lexButton.setOnClickListener{
+            val code: String = codeInput.text.toString()
+            val lexemes: ArrayList<StringBuilder> = code.lines().map{StringBuilder(it)} as ArrayList<StringBuilder>
+
+            val lexer = unam.fi.compilers.team2.lexer.Lexer(lexemes,this)
+            val tokens = lexer.tokenize()
+
+            val tokenOutput = tokens.joinToString("\n") {
+                it.toString()
+            }
+
+            val intent: Intent = Intent(this, TokenStreamActivity::class.java)
+            intent.putExtra("Lexer Output",tokenOutput)
+            startActivity(intent)
+        }
     }
+
 }
 
 @Composable
