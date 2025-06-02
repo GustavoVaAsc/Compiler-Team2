@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.Compiler" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">#BB86FC</item>
-        <item name="colorOnPrimary">#000000</item>
+        <item name="colorPrimary">#8f0021</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
         <item name="android:colorBackground">#121212</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
         <item name="android:textColorSecondary">#AAAAAA</item>
@@ -9,5 +9,7 @@
 
     <style name="ButtonStyle" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:textAllCaps">false</item>
+        <item name="backgroundTint">#8f0021</item>
+        <item name="android:textColor">#FFFFFF</item>
     </style>
 </resources>
