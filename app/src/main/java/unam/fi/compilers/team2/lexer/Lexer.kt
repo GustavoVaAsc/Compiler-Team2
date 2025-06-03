@@ -26,6 +26,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         this.categories.add("Keyword")
         this.categories.add("Identifier")
         this.categories.add("Operator")
+        this.categories.add("Boolean")
         this.categories.add("Relation")
         this.categories.add("Punctuation")
         this.categories.add("Constant")
@@ -68,6 +69,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         val opRegex = Regex(">>=|<<=|\\+=|-=|\\*=|/=|%=|&&|\\|\\||\\+\\+|--|&=|\\|=|\\^=|=|!|\\+|-|\\*|/|%|&|\\||\\^")
         val relRegex:Regex = Regex("==|!=|>=|<=|>|<")
         val puntRegex = Regex("\\*|\\(|\\)|\\.|,|:|;|\\{|\\}|->")
+        val boolRegex = Regex("\\b(true|false)\\b")
         val constRegex:Regex = Regex("-?[0-9]+(\\.[0-9]+)?")
         val litRegex:Regex = Regex("\"([^\"\\\\]|\\\\.)*\"")
 
@@ -90,6 +92,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
             classifyAndCount(constRegex, noLitLexeme, "Constant", i)
             classifyAndCount(keywordRegex, noLitLexeme, "Keyword", i)
             classifyAndCount(datatypeRegex, noLitLexeme, "Datatype", i)
+            classifyAndCount(boolRegex, noLitLexeme, "Boolean", i)
             classifyAndCount(relRegex, noLitLexeme, "Relation", i)
             classifyAndCount(opRegex, noLitLexeme, "Operator", i)
             classifyAndCount(puntRegex, noLitLexeme, "Punctuation", i)
