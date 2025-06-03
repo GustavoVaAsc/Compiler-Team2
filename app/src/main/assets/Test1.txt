@@ -1,0 +1,58 @@
+DERIVATION FOR PROGRAM 1
+
+<Source> ::= <Libs> <TopDeclarations>
+<Libs> ::= import <Id> ;
+<Id> ::= io
+
+<TopDeclarations> ::= <Class> <TopDeclarations>
+<Class> ::= class <Id> <ClassBlock>
+<Id> ::= Perro
+<ClassBlock> ::= { <ClassMember> <ClassMember> }
+
+<ClassMember> ::= <Variable> ;
+<Variable> ::= <Type> <Id>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= string
+<Id> ::= nombre
+
+<ClassMember> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= ladrar
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "Woof woof"
+
+<TopDeclarations> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= main
+<Block> ::= { <Statement> <Statement> }
+
+<Statement> ::= <Variable> ;
+<Variable> ::= <Type> <Id> = <Expression>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= int8
+<Id> ::= x
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer>> ::= 5
+<BinaryOp> ::= +
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 2
+
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Id>
+<Id> ::= x

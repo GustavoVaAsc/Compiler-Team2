@@ -1,0 +1,14 @@
+import io
+
+class Perro{
+    string nombre;
+
+    void function ladrar(){
+          println("Woof woof");
+     }
+}
+
+void function main(){
+     int8 x = 5+2;
+     println(x);
+}
