@@ -1,5 +1,5 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/token_scroll"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -8,6 +8,9 @@
         android:id="@+id/token_output"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:typeface="monospace" />
+        android:textSize="11sp"
+        android:lineSpacingExtra="6dp"
+        android:typeface="monospace"
+        android:textColor="#FFFFFF"
+        android:padding="12dp"/>
 </ScrollView>
