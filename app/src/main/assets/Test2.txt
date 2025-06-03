@@ -1,4 +1,4 @@
-DERIVATION FOR PROGRAM 1
+DERIVATION FOR PROGRAM 2
 
 <Source> ::= <Libs> <TopDeclarations>
 <Libs> ::= import <Id> ;

@@ -11,6 +11,6 @@
         android:textSize="11sp"
         android:lineSpacingExtra="6dp"
         android:typeface="monospace"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/tokenTextColor"
         android:padding="12dp"/>
 </ScrollView>

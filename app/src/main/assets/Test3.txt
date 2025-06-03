@@ -1,0 +1,51 @@
+DERIVATION FOR PROGRAM 3
+
+<Source> ::= <Libs> <TopDeclarations>
+<Libs> ::= ε
+
+<TopDeclarations> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= main
+<Block> ::= { <Statement> <Statement> <Statement> }
+
+<Statement> ::= <Variable> ;
+<Variable> ::= <Type> <Id> = <Expression>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= int
+<Id> ::= i
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 1
+
+<Statement> ::= <ControlFlow>
+<ControlFlow> ::= <WhileStatement>
+<WhileStatement> ::= while ( <Expression> ) <Block>
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= i
+<BinaryOp> ::= <=
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 5
+
+<Block> ::= { <Statement> <Statement> }
+
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Id>
+<Id> ::= i
+
+<Statement> ::= <Assignment> ;
+<Assignment> ::= <Id> = <Expression>
+<Id> ::= i
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= i
+<BinaryOp> ::= +
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 1
