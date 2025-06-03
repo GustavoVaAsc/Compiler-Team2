@@ -1,0 +1,58 @@
+DERIVATION FOR PROGRAM 1
+
+<Source> ::= <Libs> <TopDeclarations>
+<Libs> ::= import <Id> ;
+<Id> ::= math
+
+<TopDeclarations> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= main
+<Block> ::= { <Statement> <Statement> }
+
+<Statement> ::= <Variable> ;
+<Variable> ::= <Type> <Id> = <Expression>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= int
+<Id> ::= x
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 10
+
+<Statement> ::= <ControlFlow>
+<ControlFlow> ::= <IfStatement>
+<IfStatement> ::= if ( <Expression> ) <Block> <ElsePart>
+<Expression> ::= ( <Expression> )
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= ( <Expression> )
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= x
+<BinaryOp> ::= %
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 2
+<BinaryOp> ::= ==
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 0
+
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "The number is even"
+
+<ElsePart> ::= else <Block>
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "The number is odd"

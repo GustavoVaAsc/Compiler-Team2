@@ -1,0 +1,11 @@
+import math
+
+void function main() {
+    int x = 10;
+
+    if ((x % 2) == 0) {
+        println("The number is even");
+    } else {
+        println("The number is odd");
+    }
+}
