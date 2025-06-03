@@ -9,5 +9,8 @@ class Token (private val token_type:String,
         return "${token_type} [$token_value] at line: $line, Col: $column"
     }
 
-
+    public fun getTokenType():String = token_type
+    public fun getTokenValue():String = token_value
+    public fun getTokenLine():Int = line
+    public fun getTokenColumn():Int = column
 }
