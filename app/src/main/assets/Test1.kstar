@@ -3,12 +3,12 @@ import io;
 class Perro{
     string nombre;
 
-    void function ladrar(){
-          println("Woof woof");
+    function void ladrar(){
+          writeln("Woof woof");
      }
 }
 
-void function main(){
-     int8 x = 5+2;
-     println(x);
+function void main(){
+     int x = 5+2;
+     writeln(x);
 }

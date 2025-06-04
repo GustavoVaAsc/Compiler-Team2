@@ -1,8 +1,8 @@
-void function main() {
+function void main() {
     int i = 1;
 
     while (i <= 5) {
-        println(i);
+        writeln(i);
         i = i + 1;
     }
 }
