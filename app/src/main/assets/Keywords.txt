@@ -2,7 +2,6 @@ break
 constant
 continue
 else
-for
 function
 if
 import

@@ -3,80 +3,94 @@ package unam.fi.compilers.team2.parser
 /*
 ---- GRAMMAR OF K* (EBNF) ----
 
-<grammar>
-    <Source> ::= <Libs>? <TopDeclarations>
+<Source> ::= [ <Libs> ] <TopDeclarations>
 
-    <Libs> ::= { import <Id> ; }
+<Libs> ::= { "import" <Id> ";" }
 
-    <TopDeclarations> ::= { <Declaration> | <Function> | <Class> }
+<TopDeclarations> ::= { <Declaration> | <Function> | <Class> }
 
-    <Declaration> ::= <Constant> | <TypeDecl> | <Variable>
+<Declaration> ::= <Constant> | <TypeDecl> | <Variable>
 
-    <Function> ::= <Type> function <Id> ( <Parameters>? ) <Block>
+<Function> ::= <Type> "function" <Id> "(" [ <Parameters> ] ")" <Block>
 
-    <Class> ::= class <Id> <ClassBlock>
+<Class> ::= "class" <Id> <ClassBlock>
 
-    <ClassBlock> ::= { <ClassMember>* }
+<ClassBlock> ::= "{" { <ClassMember> } "}"
 
-    <ClassMember> ::= <Variable> ; | <Function>
+<ClassMember> ::= <Variable> ";" | <Function>
 
-    <TypeDecl> ::= type <Id> ; | type <Id> = <Type> ;
+<TypeDecl> ::= "type" <Id> ";" | "type" <Id> "=" <Type> ";"
 
-    <Type> ::= <PrimitiveType> | <Id> | <Type> [ ]  // Basic types + arrays
+<Type> ::= <PrimitiveType> | <Id> | <Type> "[" "]"  (* basic types and arrays *)
 
-    <PrimitiveType> ::= int | float | bool | string | void
+<PrimitiveType> ::= "int" | "float" | "bool" | "string" | "void"
 
-    <Constant> ::= const <Type> <Id> = <Expression> ;
+<Constant> ::= "const" <Type> <Id> "=" <Expression> ";"
 
-    <Variable> ::= <Type> <Id> [ = <Expression> ]? ;
+<Variable> ::= <Type> <Id> [ "=" <Expression> ] ";"
 
-    <Parameters> ::= <Type> <Id> { , <Type> <Id> }
+<Parameters> ::= <Type> <Id> { "," <Type> <Id> }
 
-    <Block> ::= { <Statement>* }
+<Block> ::= "{" { <Statement> } "}"
 
-    <Statement> ::= <Variable> ;
-                  | <Assignment> ;
-                  | <FunctionCall> ;
-                  | <ControlFlow>
-                  | <Return> ;
-                  | <Block>
+<Statement> ::= <Variable> ";"
+              | <Assignment> ";"
+              | <FunctionCall> ";"
+              | <ControlFlow>
+              | <Return> ";"
+              | <Block>
 
-    <Assignment> ::= <Id> = <Expression>
+<Assignment> ::= <Id> "=" <Expression>
 
-    <FunctionCall> ::= <Id> ( <Arguments>? )
+<FunctionCall> ::= <Id> "(" [ <Arguments> ] ")"
 
-    <Arguments> ::= <Expression> { , <Expression> }
+<Arguments> ::= <Expression> { "," <Expression> }
 
-    <ControlFlow> ::= <IfStatement> | <WhileStatement>
+<ControlFlow> ::= <IfStatement> | <WhileStatement>
 
-    <IfStatement> ::= if ( <Expression> ) <Block> <ElsePart>?
+<IfStatement> ::= "if" "(" <Expression> ")" <Block> [ <ElsePart> ]
 
-    <ElsePart> ::= else <IfStatement>
-             | else <Block>
+<ElsePart> ::= "else" <IfStatement>
+             | "else" <Block>
 
+<WhileStatement> ::= "while" "(" <Expression> ")" <Block>
 
-    <WhileStatement> ::= while ( <Expression> ) <Block>
+<Return> ::= "return" [ <Expression> ]
 
-    <Return> ::= return [ <Expression> ]?
+<Expression> ::= <Literal>
+               | <Id>
+               | <FunctionCall>
+               | <UnaryOp> <Expression>
+               | <Expression> <BinaryOp> <Expression>
+               | "(" <Expression> ")"
 
-    <Expression> ::= <Literal>
-                   | <Id>
-                   | <FunctionCall>
-                   | <UnaryOp> <Expression>
-                   | <Expression> <BinaryOp> <Expression>
-                   | ( <Expression> )
+<UnaryOp> ::= "-" | "!"
 
-    <UnaryOp> ::= - | !
+<BinaryOp> ::= "+" | "-" | "*" | "/" | "%" | "==" | "!=" | "<" | ">" | "<=" | ">=" | "&&" | "||"
 
-    <BinaryOp> ::= + | - | * | / | % | == | != | < | > | <= | >= | && | ||
+<Literal> ::= <Integer> | <Float> | <Boolean> | <String> | "null"
 
-    <Literal> ::= <Integer> | <Float> | <Boolean> | <String> | null
+<Integer> ::= digit { digit }
 
-    <Integer> ::= [0-9]+
-    <Float> ::= [0-9]+ \. [0-9]*
-    <Boolean> ::= true | false
-    <String> ::= " ( [^"\n] | \\" )* "
-</grammar>
+<Float> ::= digit { digit } "." digit { digit }
+
+<Boolean> ::= "true" | "false"
+
+<String> ::= "\"" { character | escaped_quote } "\""
+
+<Id> ::= letter { letter | digit | "_" }
+
+(*
+
+Where:
+
+- digit = "0" | "1" | ... | "9"
+- letter = "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+- character = any character except " or newline
+- escaped_quote = "\\\""
+
+*)
+
 
 */
 
