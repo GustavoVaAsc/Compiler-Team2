@@ -223,7 +223,6 @@ class MainActivity : AppCompatActivity() {
             val lexemes: ArrayList<StringBuilder> = code.lines().map{StringBuilder(it)} as ArrayList<StringBuilder>
 
             val lexer = unam.fi.compilers.team2.lexer.Lexer(lexemes,this)
-            val tokens = lexer.tokenize()
             try{
                 val parser = unam.fi.compilers.team2.parser.Parser(lexer)
                 val program = parser.parseProgram()
