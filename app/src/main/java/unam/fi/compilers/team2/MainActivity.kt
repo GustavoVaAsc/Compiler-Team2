@@ -18,6 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import unam.fi.compilers.team2.parser.Parser
+import unam.fi.compilers.team2.parser.ParserTester
 import unam.fi.compilers.team2.ui.theme.CompilerTheme
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +35,11 @@ class MainActivity : AppCompatActivity() {
         codeInput = findViewById(R.id.code_input)
         lineNumbers = findViewById(R.id.line_numbers)
         lexButton = findViewById(R.id.lex_button)
+
+        // Parsing test, nuke later :D
+
+        val parserTester = ParserTester(this)
+        parserTester.testParser()
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}

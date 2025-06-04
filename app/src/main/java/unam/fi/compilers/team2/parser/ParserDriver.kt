@@ -131,17 +131,41 @@ class ParserDriver (private val parser: Parser) {
     private fun createLeafNode(token: Token, terminal: Terminal): ASTNode {
         val line = token.getTokenLine()
         val column = token.getTokenColumn()
+        val value = token.getTokenValue()
 
         return when (terminal.name) {
-            "ID" -> IdentifierNode(token.getTokenValue(), line, column, null)
-            "INTEGER" -> IntegerNode(token.getTokenValue().toInt(), line, column, null)
-            "FLOAT" -> FloatNode(token.getTokenValue().toFloat(), line, column, null)
-            "STRING" -> StringNode(token.getTokenValue(), line, column, null)
-            "true", "false" -> BooleanNode(token.getTokenValue().toBoolean(), line, column, null)
-            else -> TokenNode(terminal, token.getTokenValue(), line, column, null)
+            "Identifier" -> IdentifierNode(value, line, column, null)
+
+            "Constant" -> {
+                when {
+                    value.matches(Regex("^-?\\d+\$")) -> IntegerNode(value.toInt(), line, column, null)
+                    value.matches(Regex("^-?\\d+\\.\\d+([eE][-+]?\\d+)?\$")) -> FloatNode(value.toFloat(), line, column, null)
+                    else -> TokenNode(terminal, value, line, column, null) // fallback
+                }
+            }
+
+            "Literal" -> {
+                if (value.startsWith("\"") && value.endsWith("\"")) {
+                    StringNode(value.removeSurrounding("\""), line, column, null)
+                } else {
+                    TokenNode(terminal, value, line, column, null)
+                }
+            }
+            "Boolean" -> {
+                val booleanValue = when (value) {
+                    "true" -> true
+                    "false" -> false
+                    else -> throw IllegalArgumentException("Invalid boolean literal: $value")
+                }
+                BooleanNode(booleanValue, line, column, null)
+            }
+
+            "Operator", "Relation", "Punctuation" ->
+                TokenNode(terminal, value, line, column, null)
+
+            else -> TokenNode(terminal, value, line, column, null)
         }
     }
-
 
 
 
