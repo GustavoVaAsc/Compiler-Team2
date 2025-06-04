@@ -85,18 +85,30 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                 lexemes[i] = StringBuilder(clearedLexeme)
             }
 
-            val noLitLexeme:String = clearedLexeme.replace("\".*\"","").trim()
+            val noLitLexeme: String = litRegex.replace(clearedLexeme) { matchResult ->
+                " ".repeat(matchResult.value.length)
+            }.trim()
+
+            val noDatatypeLexeme: String = datatypeRegex.replace(noLitLexeme) { matchResult ->
+                " ".repeat(matchResult.value.length)
+            }
+
+            val noIdentifiersLexeme: String = idRegex.replace(noDatatypeLexeme) { matchResult ->
+                " ".repeat(matchResult.value.length)
+            }
+
+
 
             // TODO: Apply DRY to this:
             classifyAndCount(litRegex, clearedLexeme, "Literal", i)
-            classifyAndCount(constRegex, noLitLexeme, "Constant", i)
+            classifyAndCount(constRegex, noIdentifiersLexeme, "Constant", i)
             classifyAndCount(keywordRegex, noLitLexeme, "Keyword", i)
             classifyAndCount(datatypeRegex, noLitLexeme, "Datatype", i)
             classifyAndCount(boolRegex, noLitLexeme, "Boolean", i)
             classifyAndCount(relRegex, noLitLexeme, "Relation", i)
             classifyAndCount(opRegex, noLitLexeme, "Operator", i)
             classifyAndCount(puntRegex, noLitLexeme, "Punctuation", i)
-            classifyAndCount(idRegex, noLitLexeme, "Identifier", i)
+            classifyAndCount(idRegex, noDatatypeLexeme, "Identifier", i)
 
         }
         return this.token_stream
