@@ -1,0 +1,84 @@
+DERIVATION FOR PROGRAM 4
+
+<Source> ::= <Libs> <TopDeclarations>
+<Libs> ::= ε
+<TopDeclarations> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= main
+<Block> ::= { <Statement> <Statement> <Statement> <Statement> <Statement> }
+
+<Statement> ::= <Variable> ;
+<Variable> ::= <Type> <Id> = <Expression>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= float
+<Id> ::= temperature
+<Expression> ::= <Literal>
+<Literal> ::= <Float>
+<Float> ::= 99.5
+
+<Statement> ::= <ControlFlow>
+<ControlFlow> ::= <IfStatement>
+<IfStatement> ::= if ( <Expression> ) <Block> <ElsePart>
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= temperature
+<BinaryOp> ::= >=
+<Expression> ::= <Literal>
+<Literal> ::= <Float>
+<Float> ::= 100.0
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id>(<Arguments>)
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "boiling point or above"
+
+<ElsePart> ::= else <IfStatement>
+<IfStatement> ::= if ( <Expression> ) <Block> <ElsePart>
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= temperature
+<BinaryOp> ::= >=
+<Expression> ::= <Literal>
+<Literal> ::= <Float>
+<Float> ::= 37.0
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id>(<Arguments>)
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "warm liquid"
+
+<ElsePart> ::= else <IfStatement>
+<IfStatement> ::= if ( <Expression> ) <Block> <ElsePart>
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Id>
+<Id> ::= temperature
+<BinaryOp> ::= >=
+<Expression> ::= <Literal>
+<Literal> ::= <Float>
+<Float> ::= 0.0
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id>(<Arguments>)
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "cold liquid"
+
+<ElsePart> ::= else <Block>
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id>(<Arguments>)
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "frozen or below"
