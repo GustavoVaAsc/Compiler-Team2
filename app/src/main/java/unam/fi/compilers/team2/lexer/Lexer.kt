@@ -33,6 +33,9 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         this.categories.add("Literal")
         this.categories.add("Datatype")
         this.categories.add("Unknown")
+        this.categories.add("INTEGER")
+        this.categories.add("FLOAT")
+        this.categories.add("STRING")
 
         try {
             // Read keywords from file
@@ -70,8 +73,10 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         val relRegex:Regex = Regex("==|!=|>=|<=|>|<")
         val puntRegex = Regex("\\*|\\(|\\)|\\.|,|:|;|\\{|\\}|->")
         val boolRegex = Regex("\\b(true|false)\\b")
-        val constRegex:Regex = Regex("-?[0-9]+(\\.[0-9]+)?")
+        //val constRegex:Regex = Regex("-?[0-9]+(\\.[0-9]+)?")
         val litRegex:Regex = Regex("\"([^\"\\\\]|\\\\.)*\"")
+        val floatRegex = Regex("-?\\d+\\.\\d+")
+        val intRegex = Regex("-?\\d+")
 
         var n:Int = this.lexemes.size
         for(i in lexemes.indices){
@@ -101,7 +106,9 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
 
             // TODO: Apply DRY to this:
             classifyAndCount(litRegex, clearedLexeme, "Literal", i)
-            classifyAndCount(constRegex, noIdentifiersLexeme, "Constant", i)
+            classifyAndCount(litRegex, clearedLexeme, "STRING", i)
+            classifyAndCount(floatRegex, noIdentifiersLexeme, "FLOAT", i)
+            classifyAndCount(intRegex, noIdentifiersLexeme, "INTEGER", i)
             classifyAndCount(keywordRegex, noLitLexeme, "Keyword", i)
             classifyAndCount(datatypeRegex, noLitLexeme, "Datatype", i)
             classifyAndCount(boolRegex, noLitLexeme, "Boolean", i)
@@ -131,11 +138,11 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
             if(category == "Identifier"){
                 if(token !in keywords){
                     token_classification.getOrPut(category) { mutableSetOf() }.add(token)
-                    this.token_stream.add(Token(category, token, line, col))
+                    this.token_stream.add(Token(category, token, line+1, col))
                 }
             }else{
                 token_classification.getOrPut(category) { mutableSetOf() }.add(token)
-                this.token_stream.add(Token(category, token, line, col))
+                this.token_stream.add(Token(category, token, line+1, col))
             }
 
             if(token !in keywords || category == "Identifier"){

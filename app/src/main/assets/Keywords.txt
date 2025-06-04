@@ -1,11 +1,9 @@
-break
-constant
-continue
-else
-function
-if
+const
 import
-new
+function
+class
+type
 return
-static
+if
+else
 while

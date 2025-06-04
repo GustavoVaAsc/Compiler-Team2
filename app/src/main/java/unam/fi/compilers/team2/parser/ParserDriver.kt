@@ -11,78 +11,60 @@ class ParserDriver (private val parser: Parser) {
     private val valueStack = mutableListOf<ASTNode>()
     private val EOF = Terminal("$")
 
-    // Map token type strings to Terminal objects
-    private val tokenTypeToTerminal = mutableMapOf<String, Terminal>().apply {
-        // Keywords
-        put("import", Terminal("import"))
-        put("function", Terminal("function"))
-        put("class", Terminal("class"))
-        put("const", Terminal("const"))
-        put("type", Terminal("type"))
-        put("if", Terminal("if"))
-        put("else", Terminal("else"))
-        put("while", Terminal("while"))
-        put("return", Terminal("return"))
-
-        // Primitive types
-        put("int8", Terminal("int8"))
-        put("int16", Terminal("int16"))
-        put("int32", Terminal("int32"))
-        put("int64", Terminal("int64"))
-        put("float32", Terminal("float32"))
-        put("float64", Terminal("float64"))
-        put("bool", Terminal("bool"))
-        put("char", Terminal("char")) // Maybe this isn't fully needed
-        put("string", Terminal("string"))
-        put("void", Terminal("void"))
-
-        // Literals
-        put("true", Terminal("true"))
-        put("false", Terminal("false"))
-        put("INTEGER", Terminal("INTEGER"))
-        put("FLOAT", Terminal("FLOAT"))
-        put("STRING", Terminal("STRING"))
-        put("ID", Terminal("ID"))
-
-        // Operators and punctuation (Pending to be checked)
-        put("+", Terminal("+"))
-        put("-", Terminal("-"))
-        put("*", Terminal("*"))
-        put("/", Terminal("/"))
-        put("%", Terminal("%"))
-        put("==", Terminal("=="))
-        put("!=", Terminal("!="))
-        put("<", Terminal("<"))
-        put(">", Terminal(">"))
-        put("<=", Terminal("<="))
-        put(">=", Terminal(">="))
-        put("&&", Terminal("&&"))
-        put("||", Terminal("||"))
-        put("!", Terminal("!"))
-        put("=", Terminal("="))
-        put(";", Terminal(";"))
-        put(",", Terminal(","))
-        put("(", Terminal("("))
-        put(")", Terminal(")"))
-        put("{", Terminal("{"))
-        put("}", Terminal("}"))
-        put("[", Terminal("["))
-        put("]", Terminal("]"))
-        put("$", Terminal("$"))  // EOF
-    }
-
     // Maps Lexer token types to parser Terminal objects
     private fun mapTokenToTerminal(token: Token): Terminal {
         return when (token.getTokenType()) {
-            "Keyword" -> Terminal(token.getTokenValue().lowercase())
-            "Datatype" -> Terminal(token.getTokenValue().lowercase())
-            "Boolean" -> Terminal(token.getTokenValue().lowercase())
+            // Handle numeric literals first
+            "INTEGER" -> Terminal("INTEGER")
+            "FLOAT" -> Terminal("FLOAT")
+            "STRING" -> Terminal("STRING")
+
+            // Handle keywords
+            "Keyword" -> {
+                when (token.getTokenValue().lowercase()) {
+                    "import" -> Terminal("import")
+                    "function" -> Terminal("function")
+                    "class" -> Terminal("class")
+                    "const" -> Terminal("const")
+                    "type" -> Terminal("type")
+                    "if" -> Terminal("if")
+                    "else" -> Terminal("else")
+                    "while" -> Terminal("while")
+                    "return" -> Terminal("return")
+                    else -> throw ParseError("Unknown keyword: ${token.getTokenValue()}")
+                }
+            }
+
+            // Handle datatypes
+            "Datatype" -> {
+                when (token.getTokenValue().lowercase()) {
+                    "int" -> Terminal("int")
+                    "float" -> Terminal("float")
+                    "bool" -> Terminal("bool")
+                    "string" -> Terminal("string")
+                    "void" -> Terminal("void")
+                    else -> Terminal("ID")  // Custom type names
+                }
+            }
+
+            // Handle boolean literals
+            "Boolean" -> {
+                when (token.getTokenValue()) {
+                    "true" -> Terminal("true")
+                    "false" -> Terminal("false")
+                    else -> throw ParseError("Invalid boolean value: ${token.getTokenValue()}")
+                }
+            }
+
+            // Handle identifiers
+            "Identifier" -> Terminal("ID")
+
+            // Handle operators and punctuation
             "Operator" -> Terminal(token.getTokenValue())
             "Relation" -> Terminal(token.getTokenValue())
             "Punctuation" -> Terminal(token.getTokenValue())
-            "Identifier" -> Terminal("ID")
-            "Literal" -> Terminal("STRING")
-            "Constant" -> classifyConstant(token.getTokenValue())
+
+            // Fallback for unexpected types
             else -> throw ParseError("Unknown token type: ${token.getTokenType()}")
         }
     }
@@ -100,11 +82,32 @@ class ParserDriver (private val parser: Parser) {
         var index = 0
 
         while(true){
+
             val state = stateStack.last()
             val token = tokenStream[index]
 
             // String to Terminal
-            val terminal = tokenTypeToTerminal[token.getTokenType()]?: throw ParseError("Unknown token type: ${token.getTokenType()}")
+            val terminal = try {
+                mapTokenToTerminal(token)
+            } catch (e: ParseError) {
+                println("Token conversion error: ${e.message}")
+                println("Token: ${token.getTokenValue()} (${token.getTokenType()}) at ${token.getTokenLine()}:${token.getTokenColumn()}")
+                return null
+            }
+            println("Current state ID: $state")
+            println("Lookahead Lexer Token: type='${token.getTokenType()}', value='${token.getTokenValue()}'")
+            println("Lookahead Parser Terminal: '${terminal.name}'")
+
+            val actionsForState = parser.action_table.filterKeys { it.first == state }
+            if (actionsForState.isEmpty()) {
+                println("!!! CRITICAL: No actions defined in action_table for state $state! This is likely the root cause.")
+            } else {
+                println("Available actions/expected terminals for state $state:")
+                actionsForState.forEach { (key, actionEntry) ->
+                    // key.first is state, key.second is the Symbol (Terminal)
+                    println("  - Expects Terminal: '${key.second.name}' -> Leads to Action: $actionEntry")
+                }
+            }
             val action = parser.action_table[state to terminal] ?: run{
                 recoverFromError(token,state)
                 return null // Or continue for error recovery
@@ -125,6 +128,8 @@ class ParserDriver (private val parser: Parser) {
                 }
             }
         }
+
+
     }
 
     // Still pending to check
@@ -134,35 +139,12 @@ class ParserDriver (private val parser: Parser) {
         val value = token.getTokenValue()
 
         return when (terminal.name) {
-            "Identifier" -> IdentifierNode(value, line, column, null)
-
-            "Constant" -> {
-                when {
-                    value.matches(Regex("^-?\\d+\$")) -> IntegerNode(value.toInt(), line, column, null)
-                    value.matches(Regex("^-?\\d+\\.\\d+([eE][-+]?\\d+)?\$")) -> FloatNode(value.toFloat(), line, column, null)
-                    else -> TokenNode(terminal, value, line, column, null) // fallback
-                }
-            }
-
-            "Literal" -> {
-                if (value.startsWith("\"") && value.endsWith("\"")) {
-                    StringNode(value.removeSurrounding("\""), line, column, null)
-                } else {
-                    TokenNode(terminal, value, line, column, null)
-                }
-            }
-            "Boolean" -> {
-                val booleanValue = when (value) {
-                    "true" -> true
-                    "false" -> false
-                    else -> throw IllegalArgumentException("Invalid boolean literal: $value")
-                }
-                BooleanNode(booleanValue, line, column, null)
-            }
-
-            "Operator", "Relation", "Punctuation" ->
-                TokenNode(terminal, value, line, column, null)
-
+            "ID" -> IdentifierNode(value, line, column, null) // If Terminal("ID")
+            "INTEGER" -> IntegerNode(value.toInt(), line, column, null) // For Terminal("INTEGER")
+            "FLOAT" -> FloatNode(value.toFloat(), line, column, null)   // For Terminal("FLOAT")
+            "STRING" -> StringNode(value.removeSurrounding("\""), line, column, null) // For Terminal("STRING")
+            "true" -> BooleanNode(true, line, column, null)           // For Terminal("true")
+            "false" -> BooleanNode(false, line, column, null)
             else -> TokenNode(terminal, value, line, column, null)
         }
     }
@@ -184,13 +166,12 @@ class ParserDriver (private val parser: Parser) {
 
         val node = when (production.symbol.name) {
             "Function" -> {
-                // Production: <Type> function <Id> ( <Parameters>? ) <Block>
-                // Children: [Type, 'function', Id, '(', Parameters?, ')', Block]
+                // Production: 'function' Type ID '(' Parameters? ')' Block
                 FunctionNode(
-                    returnType = children[0] as TypeNode,
-                    name = children[2] as IdentifierNode,  // Skip 'function' token
-                    parameters = children.getOrNull(4) as? ParametersNode,  // Skip '('
-                    body = children[6] as BlockNode,        // Skip ')'
+                    returnType = children[1] as TypeNode,  // Type is now at index 1
+                    name = children[2] as IdentifierNode,
+                    parameters = children.getOrNull(4) as? ParametersNode,
+                    body = children[6] as BlockNode,
                     production = production
                 )
             }

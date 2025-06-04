@@ -199,7 +199,7 @@ data class TokenNode(
 ) : ASTNode
 
 data class ReturnNode(
-    val expression: ASTNode?,  // or ExpressionNode? if defined
+    val expression: ASTNode?,
     override val line: Int,
     override val column: Int,
     override val production: Production

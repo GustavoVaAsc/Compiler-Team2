@@ -169,21 +169,20 @@ class Parser {
     }
 
     // Closure for LR(1) items
-    private fun closure(items:Set<Item>):Set<Item>{
+    private fun closure(items: Set<Item>): Set<Item> {
         val newItems = items.toMutableSet()
-        var changed: Boolean = true
-
-        while(changed){
+        var changed = true
+        while (changed) {
             changed = false
-            items.toList().forEach{ item ->
-                val nextSymbol = item.nextSymbol() as? Nonterminal
-                nextSymbol?.let {nt ->
-                    val g = grammar.getGrammar()
-                    g.filter{it.symbol == nt}.forEach{prod ->
-                        val lookaheads = computeLookaheads(item,prod)
-                        lookaheads.forEach{la ->
-                            val newItem = Item(prod, 0, la)
-                            if(newItems.add(newItem)) changed = true
+            val currentItems = newItems.toList()
+            for (item in currentItems) {
+                val nextSymbol = item.nextSymbol() as? Nonterminal ?: continue
+                grammar.getGrammar().filter { it.symbol == nextSymbol }.forEach { prod ->
+                    val lookaheads = computeLookaheads(item, prod)
+                    lookaheads.forEach { la ->
+                        val newItem = Item(prod, 0, la)
+                        if (newItems.add(newItem)) {
+                            changed = true
                         }
                     }
                 }
@@ -266,6 +265,22 @@ class Parser {
                 }
             }
         }
+
+        // This is just debug
+        /*
+        println("--- Shift Actions added for State 0 directly from buildStates() ---")
+        val state0Actions = action_table.filterKeys { it.first == 0 }
+        if (state0Actions.isEmpty()) {
+            println("State 0 has NO shift actions immediately after buildStates().")
+        } else {
+            state0Actions.forEach { (key, action) ->
+                if (action is Action.Shift) { // Ensure it's a shift action
+                    println("State 0, Terminal '${key.second.name}' -> $action")
+                }
+            }
+        }
+        println("--- End of Shift Actions for State 0 from buildStates() ---")
+        */
     }
 
     // Merge states for LALR(1)
@@ -301,8 +316,6 @@ class Parser {
         states.clear()
         states.addAll(mergedStates)
 
-        // TODO: Update goto and action tables for new states
-
         val newGotoTable = mutableMapOf<Pair<Int,Nonterminal>, Int>()
         goto_table.forEach{(key,targetId) ->
             val (oldStateId, nonTerm) = key
@@ -330,8 +343,21 @@ class Parser {
         action_table.clear()
         action_table.putAll(newActionTable)
 
+        // Debug
+        /*
+        println("--- Shift Actions for State 0 AFTER mergeStates() ---")
+        val state0Actions = action_table.filterKeys { it.first == 0 }
+        if (state0Actions.isEmpty()) {
+            println("State 0 has NO actions after mergeStates().")
+        } else {
+            state0Actions.forEach { (key, action) ->
+                println("State 0, Terminal '${key.second.name}' -> $action")
+            }
+        }
+        println("--- End of Shift Actions for State 0 after mergeStates() ---")
+        */
     }
-
+    /*
     // Build Action table and Goto table
     fun buildTables(){
         states.forEach{state ->
@@ -347,26 +373,122 @@ class Parser {
             }
         }
     }
+    */
 
-    private fun resolveConflict(state:Int, terminal: Terminal, production: Production){
-        val shiftAction = action_table[state to terminal] as? Action.Shift
-        val reduceAction = Action.Reduce(production)
+    // TODO: If we use this code, delete the comments
+    fun buildTables() {
+        states.forEach { state ->
+            state.items.forEach { item ->
+                if (item.lookahead_position == item.production.expressions.size) { // Item is completable, can reduce
+                    val lookaheadTerminal = item.lookahead
+                    val newAction = if (item.production.symbol.name == "S'") {
+                        Action.Accept
+                    } else {
+                        Action.Reduce(item.production)
+                    }
 
-        // Get precedence levels
-        val termPrec = precedence_map[terminal.name]?:0
-        val prodPrec = getProductionPrecedence(production)
+                    val existingAction = action_table[state.id to lookaheadTerminal]
 
-        when {
-            // Shift has higher precedence
-            termPrec > prodPrec -> return // Keep shift
+                    if (existingAction != null) {
+                        // CONFLICT DETECTED!
+                        if (existingAction is Action.Shift) {
+                            println("Shift/Reduce conflict in State ${state.id} on Terminal '${lookaheadTerminal.name}':")
+                            println("  SHIFT to state ${existingAction.state_id}")
 
-            // Reduce has higher precedence
-            prodPrec > termPrec -> action_table[state to terminal] = reduceAction
+                            // Using forEach to build the string for the production expressions
+                            val reduceProductionString = buildString {
+                                append(item.production.symbol.name)
+                                append(" ::= ")
+                                item.production.expressions.forEachIndexed { index, expression ->
+                                    append(expression.name)
+                                    if (index < item.production.expressions.size - 1) {
+                                        append(" ")
+                                    }
+                                }
+                            }
+                            println("  REDUCE by rule $reduceProductionString")
 
-            // Equal precedence, we need to use associativity
-            else ->{
-                // Reduce to use default left associativity
-                action_table[state to terminal] = reduceAction
+
+                            // Call your conflict resolver
+                            // Ensure resolveConflict is adapted to take existingShiftAction and reduceProduction
+                            action_table[state.id to lookaheadTerminal] =
+                                resolveS_R_Conflict(state.id, lookaheadTerminal, item.production, existingAction)
+                            println("  Resolved to: ${action_table[state.id to lookaheadTerminal]}")
+
+                        } else if (existingAction is Action.Reduce) {
+                            // Reduce/Reduce conflict
+                            println("ERROR: Reduce/Reduce conflict in State ${state.id} on Terminal '${lookaheadTerminal.name}'")
+
+                            // Using forEach to build the string for the existing reduce production expressions
+                            val existingReduceProductionString = buildString {
+                                append(existingAction.production.symbol.name)
+                                append(" ::= ")
+                                existingAction.production.expressions.forEachIndexed { index, expression ->
+                                    append(expression.name)
+                                    if (index < existingAction.production.expressions.size - 1) {
+                                        append(" ")
+                                    }
+                                }
+                            }
+                            println("  Existing Reduce: $existingReduceProductionString")
+
+                            // Using forEach to build the string for the new reduce production expressions
+                            val newReduceProductionString = buildString {
+                                append(item.production.symbol.name)
+                                append(" ::= ")
+                                item.production.expressions.forEachIndexed { index, expression ->
+                                    append(expression.name)
+                                    if (index < item.production.expressions.size - 1) {
+                                        append(" ")
+                                    }
+                                }
+                            }
+                            println("  New Reduce: $newReduceProductionString")
+
+                            // R/R conflicts are usually grammar errors for LALR(1).
+                            // You might prefer the rule that appears first in the grammar, or throw an error.
+                            // For now, let's say the existing one wins (or you can choose)
+                            // action_table[state.id to lookaheadTerminal] = existingAction; // Or newAction
+                        }
+                        // else: existingAction is Accept - this is highly unusual to conflict with.
+                    } else {
+                        // No conflict, just add the new action
+                        action_table[state.id to lookaheadTerminal] = newAction
+                    }
+                }
+            }
+        }
+    }
+
+    // Adapt your resolveConflict method slightly
+    private fun resolveS_R_Conflict(stateId: Int, terminal: Terminal, reduceProduction: Production, shiftAction: Action.Shift): Action {
+        val reduceActionIfChosen = Action.Reduce(reduceProduction)
+
+        val termPrec = precedence_map[terminal.name] ?: 0
+        val prodPrec = getProductionPrecedence(reduceProduction) // Precedence of the rule being reduced
+
+        println("    Resolving S/R: Terminal='${terminal.name}' (prec $termPrec), ReduceRule (prec $prodPrec)")
+
+        return when {
+            termPrec > prodPrec -> {
+                println("    -> Prefer SHIFT (terminal precedence higher)")
+                shiftAction
+            }
+            prodPrec > termPrec -> {
+                println("    -> Prefer REDUCE (production precedence higher)")
+                reduceActionIfChosen
+            }
+            termPrec == 0 && prodPrec == 0 -> { // No precedence defined for either
+                println("    WARNING: Ambiguity (no precedence for terminal or rule). Defaulting to SHIFT.")
+                // Defaulting to shift is a common strategy for S/R conflicts without explicit precedence.
+                shiftAction
+            }
+            else -> { // Equal non-zero precedence: use associativity (assuming left for operators)
+                println("    Ambiguity (equal precedence). Defaulting to REDUCE (for left-associativity).")
+                // For left-associative operators like +, -, *, /, preferring reduce implements left-associativity.
+                // E.g., for "E + E + E", (E+E) reduces first.
+                // If you had right-associative operators, you'd prefer shift.
+                reduceActionIfChosen
             }
         }
     }

@@ -1,7 +1,5 @@
 package unam.fi.compilers.team2.parser
 
-import androidx.core.app.RemoteInput.Source
-
 class Grammar {
     private val grammar: List<Production>
 
@@ -10,169 +8,177 @@ class Grammar {
             // Augmented start production
             Production(Nonterminal("S'"), listOf(Nonterminal("Source"))),
 
-            // Source ::= Libs? TopDeclarations
-            Production(Nonterminal("Source"), listOf(Nonterminal("Libs"), Nonterminal("TopDeclarations"))),
-
-            // Libs ::= { import Id ; }*
-            Production(Nonterminal("Libs"), listOf()), // epsilon
-            Production(Nonterminal("Libs"), listOf(Nonterminal("Libs"), Terminal("import"), Nonterminal("Identifier"), Terminal(";"))),
-
-            // TopDeclarations ::= { Declaration | Function | Class }*
-            Production(Nonterminal("TopDeclarations"), listOf()),
-            Production(Nonterminal("TopDeclarations"), listOf(Nonterminal("TopDeclarations"), Nonterminal("Declaration"))),
-            Production(Nonterminal("TopDeclarations"), listOf(Nonterminal("TopDeclarations"), Nonterminal("Function"))),
-            Production(Nonterminal("TopDeclarations"), listOf(Nonterminal("TopDeclarations"), Nonterminal("Class"))),
+            // New unified source structure
+            Production(Nonterminal("Source"), listOf(Nonterminal("SourceElements"))),
+            Production(Nonterminal("SourceElements"), listOf(Nonterminal("SourceElement"), Nonterminal("SourceElements"))),
+            Production(Nonterminal("SourceElements"), listOf()),  // ε production
+            Production(Nonterminal("SourceElement"), listOf(Terminal("import"), Nonterminal("Id"), Terminal(";"))),
+            Production(Nonterminal("SourceElement"), listOf(Nonterminal("Declaration"))),
+            Production(Nonterminal("SourceElement"), listOf(Nonterminal("Function"))),
+            Production(Nonterminal("SourceElement"), listOf(Nonterminal("Class"))),
 
             // Declaration ::= Constant | TypeDecl | Variable
             Production(Nonterminal("Declaration"), listOf(Nonterminal("Constant"))),
             Production(Nonterminal("Declaration"), listOf(Nonterminal("TypeDecl"))),
             Production(Nonterminal("Declaration"), listOf(Nonterminal("Variable"))),
 
-            // Constant ::= 'constant' Type Identifier '=' Expression ';'
+            // Fixed Constant production (changed 'constant' to 'const')
             Production(Nonterminal("Constant"),
-                listOf(Terminal("constant"), Nonterminal("Type"), Nonterminal("Identifier"), Terminal("="), Nonterminal("Expression"), Terminal(";"))
+                listOf(Terminal("const"), Nonterminal("Type"), Terminal("ID"), Terminal("="), Nonterminal("Expression"), Terminal(";"))
             ),
 
-            // TypeDecl ::= 'type' Identifier ';' | 'type' Identifier '=' Type ';'
-            Production(Nonterminal("TypeDecl"), listOf(Terminal("type"), Nonterminal("Identifier"), Terminal(";"))),
-            Production(Nonterminal("TypeDecl"), listOf(Terminal("type"), Nonterminal("Identifier"), Terminal("="), Nonterminal("Type"), Terminal(";"))),
+            // TypeDecl
+            Production(Nonterminal("TypeDecl"), listOf(Terminal("type"), Terminal("ID"), Terminal(";"))),
+            Production(Nonterminal("TypeDecl"), listOf(Terminal("type"), Terminal("ID"), Terminal("="), Nonterminal("Type"), Terminal(";"))),
 
-            // Variable ::= Type Identifier [= Expression]? ';'
-            Production(Nonterminal("Variable"), listOf(Nonterminal("Type"), Nonterminal("Identifier"), Terminal(";"))),
-            Production(Nonterminal("Variable"), listOf(Nonterminal("Type"), Nonterminal("Identifier"), Terminal("="), Nonterminal("Expression"), Terminal(";"))),
+            // Variable
+            Production(Nonterminal("Variable"), listOf(Nonterminal("Type"), Terminal("ID"), Terminal(";"))),
+            Production(Nonterminal("Variable"), listOf(Nonterminal("Type"), Terminal("ID"), Terminal("="), Nonterminal("Expression"), Terminal(";"))),
 
-            // Function ::= Type 'function' Identifier '(' Parameters? ')' Block
+            // Function
             Production(Nonterminal("Function"),
-                listOf(Nonterminal("Type"), Terminal("function"), Nonterminal("Identifier"), Terminal("("), Nonterminal("ParametersOpt"), Terminal(")"), Nonterminal("Block"))
+                listOf(Terminal("function"), Nonterminal("Type"), Terminal("ID"), Terminal("("), Nonterminal("ParametersOpt"), Terminal(")"), Nonterminal("Block"))
             ),
 
-            // ParametersOpt ::= empty | Parameters
+            // ParametersOpt
             Production(Nonterminal("ParametersOpt"), listOf()),
             Production(Nonterminal("ParametersOpt"), listOf(Nonterminal("Parameters"))),
 
-            // Parameters ::= Parameter {',' Parameter}*
+            // Parameters
             Production(Nonterminal("Parameters"), listOf(Nonterminal("Parameter"))),
             Production(Nonterminal("Parameters"), listOf(Nonterminal("Parameters"), Terminal(","), Nonterminal("Parameter"))),
 
-            // Parameter ::= Type Identifier
-            Production(Nonterminal("Parameter"), listOf(Nonterminal("Type"), Nonterminal("Identifier"))),
+            // Parameter
+            Production(Nonterminal("Parameter"), listOf(Nonterminal("Type"), Terminal("ID"))),
 
-            // Class ::= 'class' Identifier ClassBlock
-            Production(Nonterminal("Class"), listOf(Terminal("class"), Nonterminal("Identifier"), Nonterminal("ClassBlock"))),
+            // Class
+            Production(Nonterminal("Class"), listOf(Terminal("class"), Terminal("ID"), Nonterminal("ClassBlock"))),
 
-            // ClassBlock ::= '{' ClassMember* '}'
+            // ClassBlock
             Production(Nonterminal("ClassBlock"), listOf(Terminal("{"), Nonterminal("ClassMembers"), Terminal("}"))),
             Production(Nonterminal("ClassMembers"), listOf()),
             Production(Nonterminal("ClassMembers"), listOf(Nonterminal("ClassMembers"), Nonterminal("ClassMember"))),
 
-            // ClassMember ::= Variable ';' | Function
+            // ClassMember
             Production(Nonterminal("ClassMember"), listOf(Nonterminal("Variable"))),
             Production(Nonterminal("ClassMember"), listOf(Nonterminal("Function"))),
 
-            // Type ::= Datatype | Identifier | Type '[' ']'
-            Production(Nonterminal("Type"), listOf(Nonterminal("Datatype"))),
-            Production(Nonterminal("Type"), listOf(Nonterminal("Identifier"))),
+            // Type
+            Production(Nonterminal("Type"), listOf(Nonterminal("PrimitiveType"))),
+            Production(Nonterminal("Type"), listOf(Terminal("ID"))),
             Production(Nonterminal("Type"), listOf(Nonterminal("Type"), Terminal("["), Terminal("]"))),
 
-            // Datatype ::= (all your datatypes as terminals)
-            Production(Nonterminal("Datatype"), listOf(Terminal("bool"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("char"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("class"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("enumerate"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("float32"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("float64"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("int8"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("int16"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("int32"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("int64"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("string"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("unsigned"))),
-            Production(Nonterminal("Datatype"), listOf(Terminal("void"))),
+            // PrimitiveType
+            Production(Nonterminal("PrimitiveType"), listOf(Terminal("bool"))),
+            Production(Nonterminal("PrimitiveType"), listOf(Terminal("int"))),
+            Production(Nonterminal("PrimitiveType"), listOf(Terminal("float"))),
+            Production(Nonterminal("PrimitiveType"), listOf(Terminal("string"))),
+            Production(Nonterminal("PrimitiveType"), listOf(Terminal("void"))),
 
-            // Block ::= '{' Statements '}'
+            // Block
             Production(Nonterminal("Block"), listOf(Terminal("{"), Nonterminal("Statements"), Terminal("}"))),
 
-            // Statements ::= empty | Statements Statement
+            // Statements
             Production(Nonterminal("Statements"), listOf()),
             Production(Nonterminal("Statements"), listOf(Nonterminal("Statements"), Nonterminal("Statement"))),
 
-            // Statement ::= Variable ';' | Assignment ';' | FunctionCall ';' | ControlFlow | Return ';' | Block
+            // Statement
             Production(Nonterminal("Statement"), listOf(Nonterminal("Variable"))),
-            Production(Nonterminal("Statement"), listOf(Nonterminal("Assignment"))),
-            Production(Nonterminal("Statement"), listOf(Nonterminal("FunctionCall"))),
+            Production(Nonterminal("Statement"), listOf(Nonterminal("Assignment"), Terminal(";"))),
+            Production(Nonterminal("Statement"), listOf(Nonterminal("FunctionCall"), Terminal(";"))),
             Production(Nonterminal("Statement"), listOf(Nonterminal("ControlFlow"))),
-            Production(Nonterminal("Statement"), listOf(Nonterminal("Return"))),
+            Production(Nonterminal("Statement"), listOf(Nonterminal("Return"), Terminal(";"))),
             Production(Nonterminal("Statement"), listOf(Nonterminal("Block"))),
 
-            // Assignment ::= Identifier '=' Expression
-            Production(Nonterminal("Assignment"), listOf(Nonterminal("Identifier"), Terminal("="), Nonterminal("Expression"))),
+            // Assignment
+            Production(Nonterminal("Assignment"), listOf(Terminal("ID"), Terminal("="), Nonterminal("Expression"))),
 
-            // Return ::= 'return' Expression?
+            // Return
             Production(Nonterminal("Return"), listOf(Terminal("return"))),
             Production(Nonterminal("Return"), listOf(Terminal("return"), Nonterminal("Expression"))),
 
-            // FunctionCall ::= Identifier '(' ArgumentsOpt ')'
-            Production(Nonterminal("FunctionCall"), listOf(Nonterminal("Identifier"), Terminal("("), Nonterminal("ArgumentsOpt"), Terminal(")"))),
+            // FunctionCall
+            Production(Nonterminal("FunctionCall"), listOf(Terminal("ID"), Terminal("("), Nonterminal("ArgumentsOpt"), Terminal(")"))),
 
-            // ArgumentsOpt ::= empty | Arguments
+            // ArgumentsOpt
             Production(Nonterminal("ArgumentsOpt"), listOf()),
             Production(Nonterminal("ArgumentsOpt"), listOf(Nonterminal("Arguments"))),
 
-            // Arguments ::= Expression { ',' Expression }*
+            // Arguments
             Production(Nonterminal("Arguments"), listOf(Nonterminal("Expression"))),
             Production(Nonterminal("Arguments"), listOf(Nonterminal("Arguments"), Terminal(","), Nonterminal("Expression"))),
 
-            // ControlFlow ::= IfStatement | WhileStatement
+            // ControlFlow
             Production(Nonterminal("ControlFlow"), listOf(Nonterminal("IfStatement"))),
             Production(Nonterminal("ControlFlow"), listOf(Nonterminal("WhileStatement"))),
 
-            // IfStatement ::= 'if' '(' Expression ')' Block ElsePart?
+            // IfStatement
             Production(Nonterminal("IfStatement"),
                 listOf(Terminal("if"), Terminal("("), Nonterminal("Expression"), Terminal(")"), Nonterminal("Block"), Nonterminal("ElsePartOpt"))
             ),
 
-            // ElsePartOpt ::= empty | ElsePart
+            // ElsePartOpt
             Production(Nonterminal("ElsePartOpt"), listOf()),
             Production(Nonterminal("ElsePartOpt"), listOf(Terminal("else"), Nonterminal("Block"))),
 
-            // WhileStatement ::= 'while' '(' Expression ')' Block
+            // WhileStatement
             Production(Nonterminal("WhileStatement"),
                 listOf(Terminal("while"), Terminal("("), Nonterminal("Expression"), Terminal(")"), Nonterminal("Block"))
             ),
 
-            // Expression ::= (handle operators and precedence)
-            // For simplicity, a minimal expression grammar:
+            // Expression hierarchy
+            Production(Nonterminal("Expression"), listOf(Nonterminal("ExprOr"))),
+            Production(Nonterminal("ExprOr"), listOf(Nonterminal("ExprAnd"))),
+            Production(Nonterminal("ExprOr"), listOf(Nonterminal("ExprOr"), Terminal("||"), Nonterminal("ExprAnd"))),
 
-            // Expression ::= Expression Operator Expression | '(' Expression ')' | Identifier | Constant | Literal | Boolean
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Expression"), Terminal("Operator"), Nonterminal("Expression"))), // Note: You'll need operator precedence handling here
-            Production(Nonterminal("Expression"), listOf(Terminal("("), Nonterminal("Expression"), Terminal(")"))),
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Identifier"))),
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Constant"))),
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Literal"))),
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Boolean"))),
+            Production(Nonterminal("ExprAnd"), listOf(Nonterminal("ExprEquality"))),
+            Production(Nonterminal("ExprAnd"), listOf(Nonterminal("ExprAnd"), Terminal("&&"), Nonterminal("ExprEquality"))),
 
-            // Identifier ::= Terminal category "Identifier"
-            Production(Nonterminal("Identifier"), listOf(Terminal("Identifier"))),
+            Production(Nonterminal("ExprEquality"), listOf(Nonterminal("ExprComparison"))),
+            Production(Nonterminal("ExprEquality"), listOf(Nonterminal("ExprEquality"), Terminal("=="), Nonterminal("ExprComparison"))),
+            Production(Nonterminal("ExprEquality"), listOf(Nonterminal("ExprEquality"), Terminal("!="), Nonterminal("ExprComparison"))),
 
-            // Constant ::= Terminal category "Constant"
-            Production(Nonterminal("Constant"), listOf(Terminal("Constant"))),
+            Production(Nonterminal("ExprComparison"), listOf(Nonterminal("ExprTerm"))),
+            Production(Nonterminal("ExprComparison"), listOf(Nonterminal("ExprComparison"), Terminal("<"), Nonterminal("ExprTerm"))),
+            Production(Nonterminal("ExprComparison"), listOf(Nonterminal("ExprComparison"), Terminal("<="), Nonterminal("ExprTerm"))),
+            Production(Nonterminal("ExprComparison"), listOf(Nonterminal("ExprComparison"), Terminal(">"), Nonterminal("ExprTerm"))),
+            Production(Nonterminal("ExprComparison"), listOf(Nonterminal("ExprComparison"), Terminal(">="), Nonterminal("ExprTerm"))),
 
-            // Literal ::= Terminal category "Literal"
-            Production(Nonterminal("Literal"), listOf(Terminal("Literal"))),
+            Production(Nonterminal("ExprTerm"), listOf(Nonterminal("ExprFactor"))),
+            Production(Nonterminal("ExprTerm"), listOf(Nonterminal("ExprTerm"), Terminal("+"), Nonterminal("ExprFactor"))),
+            Production(Nonterminal("ExprTerm"), listOf(Nonterminal("ExprTerm"), Terminal("-"), Nonterminal("ExprFactor"))),
 
-            // Boolean ::= Terminal category "Boolean"
-            Production(Nonterminal("Boolean"), listOf(Terminal("Boolean"))),
+            Production(Nonterminal("ExprFactor"), listOf(Nonterminal("ExprUnary"))),
+            Production(Nonterminal("ExprFactor"), listOf(Nonterminal("ExprFactor"), Terminal("*"), Nonterminal("ExprUnary"))),
+            Production(Nonterminal("ExprFactor"), listOf(Nonterminal("ExprFactor"), Terminal("/"), Nonterminal("ExprUnary"))),
+            Production(Nonterminal("ExprFactor"), listOf(Nonterminal("ExprFactor"), Terminal("%"), Nonterminal("ExprUnary"))),
 
-            // Operator ::= all your operators as terminals or a generic Operator terminal
-            Production(Nonterminal("Operator"), listOf(Terminal("Operator"))),
+            Production(Nonterminal("ExprUnary"), listOf(Nonterminal("ExprPrimary"))),
+            Production(Nonterminal("ExprUnary"), listOf(Terminal("!"), Nonterminal("ExprUnary"))),
+            Production(Nonterminal("ExprUnary"), listOf(Terminal("-"), Nonterminal("ExprUnary"))),
 
-            // Relation ::= relational operators, e.g. ==, !=, <, >, etc.
-            Production(Nonterminal("Relation"), listOf(Terminal("Relation"))),
+            // Fixed primary expressions with proper token types
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("ID"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("INTEGER"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("FLOAT"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("STRING"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("true"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("false"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("null"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Terminal("("), Nonterminal("Expression"), Terminal(")"))),
+            Production(Nonterminal("ExprPrimary"), listOf(Nonterminal("FunctionCall"))),
 
-            // Punctuation ::= punctuation terminals like ;, {, }, (, ), etc.
-            Production(Nonterminal("Punctuation"), listOf(Terminal("Punctuation")))
+            // Added Literal productions
+            Production(Nonterminal("Literal"), listOf(Terminal("INTEGER"))),
+            Production(Nonterminal("Literal"), listOf(Terminal("FLOAT"))),
+            Production(Nonterminal("Literal"), listOf(Terminal("STRING"))),
+            Production(Nonterminal("Literal"), listOf(Terminal("true"))),
+            Production(Nonterminal("Literal"), listOf(Terminal("false"))),
+            Production(Nonterminal("Literal"), listOf(Terminal("null"))),
+
+            // Connect Literal to Expression
+            Production(Nonterminal("Expression"), listOf(Nonterminal("Literal")))
         )
-
     }
 
     fun getGrammar(): List<Production> = grammar
