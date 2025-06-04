@@ -1,9 +1,7 @@
-const
-import
 function
 class
-type
 return
 if
 else
 while
+for
