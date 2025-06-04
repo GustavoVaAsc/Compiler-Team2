@@ -86,7 +86,7 @@ class ParserTester(val context: Context) {
             is FloatNode -> print(": ${node.value}")
             is StringNode -> print(": \"${node.value}\"")
             is BooleanNode -> print(": ${node.value}")
-            is TypeNode -> print(": ${node.name}${if (node.isArray) "[]" else ""}")
+            is TypeNode -> print(": ${node.name}${if (node.arrayDimensions < 0) "[]" else ""}")
             is TokenNode -> print(": ${node.terminal.name} = '${node.value}'")
             is BinaryOpNode -> print(": ${node.operator}")
             is UnaryOpNode -> print(": ${node.operator}")

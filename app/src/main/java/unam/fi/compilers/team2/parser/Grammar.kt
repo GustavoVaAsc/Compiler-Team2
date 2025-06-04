@@ -64,9 +64,11 @@ class Grammar {
             Production(Nonterminal("ClassMember"), listOf(Nonterminal("Function"))),
 
             // Type
-            Production(Nonterminal("Type"), listOf(Nonterminal("PrimitiveType"))),
-            Production(Nonterminal("Type"), listOf(Terminal("ID"))),
-            Production(Nonterminal("Type"), listOf(Nonterminal("Type"), Terminal("["), Terminal("]"))),
+            Production(Nonterminal("Type"), listOf(Nonterminal("SimpleType"), Nonterminal("ArraySuffixOpt"))),
+            Production(Nonterminal("ArraySuffixOpt"), listOf()),
+            Production(Nonterminal("ArraySuffixOpt"), listOf(Terminal("["), Terminal("]"), Nonterminal("ArraySuffixOpt"))),
+            Production(Nonterminal("SimpleType"), listOf(Nonterminal("PrimitiveType"))),
+            Production(Nonterminal("SimpleType"), listOf(Terminal("ID"))),
 
             // PrimitiveType
             Production(Nonterminal("PrimitiveType"), listOf(Terminal("bool"))),
@@ -168,16 +170,8 @@ class Grammar {
             Production(Nonterminal("ExprPrimary"), listOf(Terminal("("), Nonterminal("Expression"), Terminal(")"))),
             Production(Nonterminal("ExprPrimary"), listOf(Nonterminal("FunctionCall"))),
 
-            // Added Literal productions
-            Production(Nonterminal("Literal"), listOf(Terminal("INTEGER"))),
-            Production(Nonterminal("Literal"), listOf(Terminal("FLOAT"))),
-            Production(Nonterminal("Literal"), listOf(Terminal("STRING"))),
-            Production(Nonterminal("Literal"), listOf(Terminal("true"))),
-            Production(Nonterminal("Literal"), listOf(Terminal("false"))),
-            Production(Nonterminal("Literal"), listOf(Terminal("null"))),
+            Production(Nonterminal("Expression"), listOf(Nonterminal("ExprPrimary")))
 
-            // Connect Literal to Expression
-            Production(Nonterminal("Expression"), listOf(Nonterminal("Literal")))
         )
     }
 

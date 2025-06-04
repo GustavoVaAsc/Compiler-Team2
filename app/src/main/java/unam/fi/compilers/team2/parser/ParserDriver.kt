@@ -17,15 +17,6 @@ class ParserDriver (private val parser: Parser) {
             "INTEGER" -> Terminal("INTEGER")
             "FLOAT" -> Terminal("FLOAT")
             "STRING" -> Terminal("STRING")
-            "Constant" -> {  // Fallback for numeric constants
-                when {
-                    token.getTokenValue().matches(Regex("-?\\d+")) -> Terminal("INTEGER")
-                    token.getTokenValue().matches(Regex("-?\\d+\\.\\d*")) -> Terminal("FLOAT")
-                    else -> throw ParseError("Invalid constant: ${token.getTokenValue()}")
-                }
-            }
-
-            // Handle keywords
             "Keyword" -> {
                 when (token.getTokenValue().lowercase()) {
                     "import" -> Terminal("import")
@@ -40,20 +31,16 @@ class ParserDriver (private val parser: Parser) {
                     else -> throw ParseError("Unknown keyword: ${token.getTokenValue()}")
                 }
             }
-
-            // Handle datatypes
-            "Datatype" -> {
+            "Datatype" -> {  // Handle datatype tokens
                 when (token.getTokenValue().lowercase()) {
                     "int" -> Terminal("int")
                     "float" -> Terminal("float")
                     "bool" -> Terminal("bool")
                     "string" -> Terminal("string")
                     "void" -> Terminal("void")
-                    else -> Terminal("ID")  // Custom type names
+                    else -> Terminal("ID")  // Custom types
                 }
             }
-
-            // Handle boolean literals
             "Boolean" -> {
                 when (token.getTokenValue()) {
                     "true" -> Terminal("true")
@@ -61,16 +48,10 @@ class ParserDriver (private val parser: Parser) {
                     else -> throw ParseError("Invalid boolean value: ${token.getTokenValue()}")
                 }
             }
-
-            // Handle identifiers
             "Identifier" -> Terminal("ID")
-
-            // Handle operators and punctuation
             "Operator" -> Terminal(token.getTokenValue())
             "Relation" -> Terminal(token.getTokenValue())
             "Punctuation" -> Terminal(token.getTokenValue())
-
-            // Fallback for unexpected types
             else -> throw ParseError("Unknown token type: ${token.getTokenType()}")
         }
     }
@@ -131,6 +112,12 @@ class ParserDriver (private val parser: Parser) {
                 }
                 is Action.Accept ->{
                     return valueStack.singleOrNull() // Root AST Node
+                }
+            }
+            if (state == 13) {
+                println("State 13 actions:")
+                parser.action_table.filterKeys { it.first == 13 }.forEach { (key, action) ->
+                    println("  ${key.second} -> $action")
                 }
             }
         }
@@ -242,15 +229,13 @@ class ParserDriver (private val parser: Parser) {
                 )
             }
 
-            "Variable" -> {
-                // Production: <Type> <Id> = <Expression>? ;
-                // Children: [Type, Id, '=', Expression?] - semicolon not in AST
+            "Variable", "Constant" -> {
                 DeclarationNode(
                     type = children[0] as TypeNode,
                     name = children[1] as IdentifierNode,
-                    value = children.getOrNull(3) as? ExpressionNode,  // Safe cast to ExpressionNode?
-                    line = (children[0] as TypeNode).line,
-                    column = (children[0] as TypeNode).column,
+                    value = children.getOrNull(3) as? ExpressionNode,
+                    line = children[0].line,
+                    column = children[0].column,
                     production = production
                 )
             }
@@ -301,6 +286,42 @@ class ParserDriver (private val parser: Parser) {
                     aliasType = children[3] as TypeNode,
                     production = production
                 )
+            }
+
+            "PrimitiveType" -> {
+                TypeNode(
+                    name = (children[0] as TokenNode).value,
+                    line = children[0].line,
+                    column = children[0].column,
+                    production = production
+                )
+            }
+            "SimpleType" -> {
+                when (val child = children[0]) {
+                    is TypeNode -> child  // Already created by PrimitiveType
+                    is TokenNode -> TypeNode(  // Custom type (ID)
+                        name = child.value,
+                        line = child.line,
+                        column = child.column,
+                        production = production
+                    )
+                    else -> throw ParseError("Invalid child for SimpleType: $child")
+                }
+            }
+            "Type" -> {
+                if (production.expressions.size == 1) {
+                    children[0] as TypeNode  // SimpleType
+                } else {
+                    // Array type: Type '[' ']'
+                    val baseType = children[0] as TypeNode
+                    TypeNode(
+                        name = baseType.name,
+                        arrayDimensions = baseType.arrayDimensions + 1,
+                        line = children[1].line,  // Position of '['
+                        column = children[1].column,
+                        production = production
+                    )
+                }
             }
 
             else -> throw ParseError("Unhandled production: ${production.symbol.name}")

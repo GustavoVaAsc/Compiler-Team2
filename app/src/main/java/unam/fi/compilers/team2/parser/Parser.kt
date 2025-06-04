@@ -235,30 +235,37 @@ class Parser {
     }
 
     // Build canonical collection (LR(1) Automata)
-    fun buildStates(){
+    fun buildStates() {
         val startItem = Item(START_PRODUCTION, 0, EOF)
-        val initialState = State(0,closure(setOf(startItem)))
+        val initialState = State(0, closure(setOf(startItem)))
         states.add(initialState)
 
         var nextStateId = 1
-        val stateQueue = ArrayDeque<State>().apply { add(initialState) } // Kinda overkill declaration?
+        val stateQueue = ArrayDeque<State>().apply { add(initialState) }
+        val processedStates = mutableSetOf<Set<Item>>()
 
-        while(stateQueue.isNotEmpty()){
+        while (stateQueue.isNotEmpty()) {
             val state = stateQueue.removeFirst()
-            val symbols = state.items.flatMap {it.nextSymbol()?.let{listOf(it)} ?: emptyList()}.toSet() // WTF
+            // Skip already processed states
+            if (processedStates.contains(state.items)) continue
+            processedStates.add(state.items)
+
+            // Get all possible next symbols from all items in this state
+            val symbols = state.items.mapNotNull { it.nextSymbol() }.toSet()
 
             symbols.forEach { sym ->
                 val newItems = goto(state.items, sym)
-                if(newItems.isNotEmpty()){
-                    val existing = states.find {it.items == newItems}
-                    val stateId = existing?.id?:nextStateId++
+                if (newItems.isNotEmpty()) {
+                    val existingState = states.find { it.items == newItems }
+                    val stateId = existingState?.id ?: nextStateId++
 
-                    if(existing == null){
-                        val newState = State(stateId,newItems)
+                    if (existingState == null) {
+                        val newState = State(stateId, newItems)
                         states.add(newState)
+                        stateQueue.add(newState)
                     }
 
-                    when(sym){
+                    when (sym) {
                         is Nonterminal -> goto_table[state.id to sym] = stateId
                         is Terminal -> action_table[state.id to sym] = Action.Shift(stateId)
                     }
@@ -266,21 +273,17 @@ class Parser {
             }
         }
 
-        // This is just debug
-        /*
-        println("--- Shift Actions added for State 0 directly from buildStates() ---")
-        val state0Actions = action_table.filterKeys { it.first == 0 }
-        if (state0Actions.isEmpty()) {
-            println("State 0 has NO shift actions immediately after buildStates().")
+        // Add debug prints to verify state 13 actions
+        println("--- Actions for State 13 ---")
+        val state13Actions = action_table.filterKeys { it.first == 13 }
+        if (state13Actions.isEmpty()) {
+            println("State 13 has NO actions after buildStates().")
         } else {
-            state0Actions.forEach { (key, action) ->
-                if (action is Action.Shift) { // Ensure it's a shift action
-                    println("State 0, Terminal '${key.second.name}' -> $action")
-                }
+            state13Actions.forEach { (key, action) ->
+                println("State 13, Terminal '${key.second.name}' -> $action")
             }
         }
-        println("--- End of Shift Actions for State 0 from buildStates() ---")
-        */
+        println("--- End of Actions for State 13 ---")
     }
 
     // Merge states for LALR(1)

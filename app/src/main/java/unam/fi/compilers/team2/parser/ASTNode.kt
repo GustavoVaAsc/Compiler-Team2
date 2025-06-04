@@ -131,13 +131,17 @@ data class ClassMethodNode(
 ) : ClassMemberNode
 
 // Types
-data class TypeNode(
+class TypeNode(
     val name: String,
-    val isArray: Boolean = false,
+    val arrayDimensions: Int = 0,  // 0 for non-array types
     override val line: Int,
     override val column: Int,
     override val production: Production? = null
-) : ASTNode
+) : ASTNode {
+    override fun toString(): String {
+        return if (arrayDimensions > 0) "$name${"[]".repeat(arrayDimensions)}" else name
+    }
+}
 
 data class TypeAliasNode(
     val name: IdentifierNode,
@@ -204,3 +208,4 @@ data class ReturnNode(
     override val column: Int,
     override val production: Production
 ) : ASTNode
+
