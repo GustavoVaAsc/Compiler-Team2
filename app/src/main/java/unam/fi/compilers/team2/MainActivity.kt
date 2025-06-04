@@ -41,30 +41,76 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun findIgnoredRanges(text: String): List<IntRange> {
+        val ignoredRanges = mutableListOf<IntRange>()
+
+        var i = 0
+        val length = text.length
+        while (i < length) {
+            when {
+
+                i + 1 < length && text[i] == '/' && text[i + 1] == '/' -> {
+                    val end = text.indexOf('\n', i).let { if (it == -1) length else it }
+                    ignoredRanges.add(i until end)
+                    i = end
+                }
+
+                text[i] == '"' -> {
+                    val start = i
+                    i++
+                    while (i < length) {
+                        if (text[i] == '"' && text[i - 1] != '\\') {
+                            i++
+                            break
+                        }
+                        i++
+                    }
+                    ignoredRanges.add(start until i)
+                }
+
+                else -> i++
+            }
+        }
+        return ignoredRanges
+    }
+
+
 
     private fun applyHighlight(
         spannable: SpannableStringBuilder,
         words: List<String>,
         color: Int,
-        text: String
+        text: String,
+        ignoredRanges: List<IntRange>
     ) {
+        fun isInIgnoredRange(start: Int, end: Int): Boolean {
+            return ignoredRanges.any { range -> start < range.endInclusive && end > range.start }
+        }
+
         for (word in words) {
             var index = text.indexOf(word)
             while (index >= 0) {
-                val beforeChar = if (index > 0) text[index - 1] else ' '
-                val afterChar = if (index + word.length < text.length) text[index + word.length] else ' '
-                if (!beforeChar.isLetterOrDigit() && !afterChar.isLetterOrDigit()) {
-                    spannable.setSpan(
-                        ForegroundColorSpan(color),
-                        index,
-                        index + word.length,
-                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                val start = index
+                val end = index + word.length
+
+                if (!isInIgnoredRange(start, end)) {
+                    val beforeChar = if (start > 0) text[start - 1] else ' '
+                    val afterChar = if (end < text.length) text[end] else ' '
+                    if (!beforeChar.isLetterOrDigit() && !afterChar.isLetterOrDigit()) {
+                        spannable.setSpan(
+                            ForegroundColorSpan(color),
+                            start,
+                            end,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
                 }
+
                 index = text.indexOf(word, index + word.length)
             }
         }
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,13 +141,15 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 val text = s.toString()
                 val spannable = SpannableStringBuilder(text)
+                val ignoredRanges = findIgnoredRanges(text)
 
                 spannable.getSpans(0, spannable.length, ForegroundColorSpan::class.java).forEach {
                     spannable.removeSpan(it)
                 }
 
-                applyHighlight(spannable, datatypes, dtColor, text)
-                applyHighlight(spannable, keywords, kwColor, text)
+                applyHighlight(spannable, datatypes, dtColor, text, ignoredRanges)
+                applyHighlight(spannable, keywords, kwColor, text, ignoredRanges)
+
 
                 codeInput.removeTextChangedListener(this)
                 codeInput.text = spannable
