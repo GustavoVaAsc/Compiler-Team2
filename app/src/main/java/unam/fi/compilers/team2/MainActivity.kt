@@ -18,8 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import unam.fi.compilers.team2.parser.Parser
-import unam.fi.compilers.team2.parser.ParserTester
 import unam.fi.compilers.team2.ui.theme.CompilerTheme
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -83,11 +81,6 @@ class MainActivity : AppCompatActivity() {
 
         val dtColor = Color.parseColor("#E4195C")
         val kwColor = Color.parseColor("#8F0021")
-
-        // Parsing test, nuke later :D
-
-        val parserTester = ParserTester(this)
-        parserTester.testParser()
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
