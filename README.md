@@ -58,8 +58,85 @@ and then transforming them into a finite automaton (usually a deterministic fini
 ---
 
 
+#### Grammar Derivation
+One of the core components of a compiler is the parser, which validates and interprets the structure of source code based on a formal grammar. This section illustrates how our compiler applies derivation rules from a context-free grammar to parse a sample program.
 
+For instance, given the following source code in our custom language:
+```
+import io;
 
+class Perro {
+    string nombre;
+
+    void function ladrar() {
+        println("Woof woof");
+    }
+}
+
+void function main() {
+    int8 x = 5 + 2;
+    println(x);
+}
+```
+Our compiler parses it and generates a leftmost derivation using the grammar defined in our parser module:
+```
+<Source> ::= <Libs> <TopDeclarations>Add commentMore actions
+<Libs> ::= import <Id> ;
+<Id> ::= io
+
+<TopDeclarations> ::= <Class> <TopDeclarations>
+<Class> ::= class <Id> <ClassBlock>
+<Id> ::= Perro
+<ClassBlock> ::= { <ClassMember> <ClassMember> }
+
+<ClassMember> ::= <Variable> ;
+<Variable> ::= <Type> <Id>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= string
+<Id> ::= nombre
+
+<ClassMember> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= ladrar
+<Block> ::= { <Statement> }
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <String>
+<String> ::= "Woof woof"
+
+<TopDeclarations> ::= <Function>
+<Function> ::= <Type> function <Id> ( ) <Block>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= void
+<Id> ::= main
+<Block> ::= { <Statement> <Statement> }
+
+<Statement> ::= <Variable> ;
+<Variable> ::= <Type> <Id> = <Expression>
+<Type> ::= <PrimitiveType>
+<PrimitiveType> ::= int8
+<Id> ::= x
+<Expression> ::= <Expression> <BinaryOp> <Expression>
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer>> ::= 5
+<BinaryOp> ::= +
+<Expression> ::= <Literal>
+<Literal> ::= <Integer>
+<Integer> ::= 2
+
+<Statement> ::= <FunctionCall> ;
+<FunctionCall> ::= <Id> ( <Arguments> )
+<Id> ::= println
+<Arguments> ::= <Expression>
+<Expression> ::= <Id>
+<Id> ::= x
+```
 ## Results 
 ### Application start
 
@@ -80,3 +157,11 @@ and then transforming them into a finite automaton (usually a deterministic fini
 [2] “CS 340: Lecture 2: Finite Automata, Lexical Analysis”. GitHub Pages. [Online]. Available: [https://ycpcs.github.io/cs340-fall2016/lectures/lecture02.html]
 
 [3] “Introduction of Finite Automata - GeeksforGeeks”. GeeksforGeeks.[Online]. Available: [https://www.geeksforgeeks.org/introduction-of-finite-automata/]
+
+[4] “LR Parser”. GeeksforGeeks, Mar. 31, 2021.[Online]. Available: [https://www.geeksforgeeks.org/lr-parser/]
+
+[5] “LALR Parser (with Examples)”. GeeksforGeeks, Jun. 24, 2021.[Online]. Available: [https://www.geeksforgeeks.org/lalr-parser-with-examples/]
+
+[6] “Extended Backus–Naur form”. WIKIPEDIA.[Online]. Available: [https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form]
+
+[7] “The Go Programming Language Specification - Language version go1.24”. GO, Dec. 30, 2024.[Online]. Available: [https://go.dev/ref/spec]
