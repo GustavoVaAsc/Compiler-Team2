@@ -75,23 +75,37 @@ class MainActivity : AppCompatActivity() {
         return ignoredRanges
     }
 
-    private fun applyCommentHighlight(spannable: SpannableStringBuilder, text: String, color: Int) {
-        val regex = Regex("//.*$")
-        val matches = regex.findAll(text)
-        for (match in matches) {
-            val start = match.range.first
-            val end = match.range.last + 1
-            spannable.setSpan(
-                ForegroundColorSpan(color),
-                start,
-                end,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+    private fun applyCommentHighlight(spannable: Editable, text: String, color: Int) {
+        var index = 0
+        val length = text.length
+        while (index < length) {
+            if (index + 1 < length && text[index] == '/' && text[index + 1] == '/') {
+                val end = text.indexOf('\n', index).let { if (it == -1) length else it }
+                spannable.setSpan(
+                    ForegroundColorSpan(color),
+                    index,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                index = end
+            } else {
+                index++
+            }
         }
     }
 
+    private fun updateLineNumbers() {
+        val lines = codeInput.lineCount
+        val lineText = buildString {
+            for (i in 1..lines) {
+                append("$i\n")
+            }
+        }
+        lineNumbers.text = lineText.trimEnd()
+    }
+
     private fun applyHighlight(
-        spannable: SpannableStringBuilder,
+        spannable: Spannable,
         words: List<String>,
         color: Int,
         text: String,
@@ -164,29 +178,26 @@ class MainActivity : AppCompatActivity() {
 
         codeInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-
                 codeInput.removeTextChangedListener(this)
 
-                val text = s.toString()
+                s?.let { editable ->
+                    val text = editable.toString()
 
-                val spannable = SpannableStringBuilder(text)
+                    val spans = editable.getSpans(0, editable.length, ForegroundColorSpan::class.java)
+                    for (span in spans) {
+                        editable.removeSpan(span)
+                    }
 
-                val ignoredRanges = findIgnoredRanges(text)
+                    val ignoredRanges = findIgnoredRanges(text)
 
-                for ((words, color) in wordColorMap) {
-                    applyHighlight(spannable, words, color, text, ignoredRanges)
+                    for ((words, color) in wordColorMap) {
+                        applyHighlight(editable, words, color, text, ignoredRanges)
+                    }
+
+                    applyCommentHighlight(editable, text, commentColor)
                 }
 
-                applyCommentHighlight(spannable, text, commentColor)
-
-                val selectionStart = codeInput.selectionStart
-                val selectionEnd = codeInput.selectionEnd
-                codeInput.text = spannable
-                codeInput.setSelection(
-                    selectionStart.coerceAtMost(codeInput.text.length),
-                    selectionEnd.coerceAtMost(codeInput.text.length)
-                )
-
+                updateLineNumbers()
 
                 codeInput.addTextChangedListener(this)
             }
