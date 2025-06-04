@@ -82,7 +82,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         for(i in lexemes.indices){
             // Delete comments
             val lexeme:String = this.lexemes[i].toString()
-            val clearedLexeme:String = lexeme.replace("//.*","").trim()
+            val clearedLexeme:String = Regex("//.*").replace(lexeme, "").trim()
             if(clearedLexeme.isEmpty()){
                 lexemes[i] = StringBuilder("\n")
                 continue

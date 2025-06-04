@@ -23,6 +23,8 @@ import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.Spannable
 import android.graphics.Color
+import android.widget.ScrollView
+
 
 
 
@@ -72,7 +74,20 @@ class MainActivity : AppCompatActivity() {
         return ignoredRanges
     }
 
-
+    private fun applyCommentHighlight(spannable: SpannableStringBuilder, text: String, color: Int) {
+        val regex = Regex("//.*$")
+        val matches = regex.findAll(text)
+        for (match in matches) {
+            val start = match.range.first
+            val end = match.range.last + 1
+            spannable.setSpan(
+                ForegroundColorSpan(color),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
 
     private fun applyHighlight(
         spannable: SpannableStringBuilder,
@@ -85,8 +100,13 @@ class MainActivity : AppCompatActivity() {
             return ignoredRanges.any { range -> start < range.endInclusive && end > range.start }
         }
 
+        val validEnd = listOf(' ', '\n', '\t', '(', '{', ';', ')', '}', ',', ':')
+        val validStart = listOf(' ', '\n', '\t', '(', '{', ';', ')', '}', ',', ':')
+
         for (word in words) {
             var index = text.indexOf(word)
+            val isSymbol = word.length == 1 && !word[0].isLetterOrDigit()
+
             while (index >= 0) {
                 val start = index
                 val end = index + word.length
@@ -94,7 +114,12 @@ class MainActivity : AppCompatActivity() {
                 if (!isInIgnoredRange(start, end)) {
                     val beforeChar = if (start > 0) text[start - 1] else ' '
                     val afterChar = if (end < text.length) text[end] else ' '
-                    if (!beforeChar.isLetterOrDigit() && !afterChar.isLetterOrDigit()) {
+
+                    if (isSymbol || (
+                                (start == 0 || beforeChar in validStart) &&
+                                        (end == text.length || afterChar in validEnd)
+                                )) {
+
                         spannable.setSpan(
                             ForegroundColorSpan(color),
                             start,
@@ -103,7 +128,6 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                 }
-
                 index = text.indexOf(word, index + word.length)
             }
         }
@@ -118,45 +142,52 @@ class MainActivity : AppCompatActivity() {
         lineNumbers = findViewById(R.id.line_numbers)
         lexButton = findViewById(R.id.lex_button)
 
-        // Load words from .txt
-
-        val datatypes = loadWords("Datatypes.txt")
-        val keywords = loadWords("Keywords.txt")
+        val commentColor = Color.parseColor("#A9D6BB")
 
         // Define colors for words
-
-        val dtColor = Color.parseColor("#E4195C")
-        val kwColor = Color.parseColor("#8F0021")
+        val fileColorMap = mapOf(
+            "Datatypes.txt" to Color.parseColor("#E4195C"),
+            "Keywords.txt" to Color.parseColor("#2172ff"),
+            "GroupS.txt" to Color.parseColor("#F2C572"),
+        )
+        // Load words from .txt
+        val wordColorMap = fileColorMap.map { (file, color) ->
+            loadWords(file) to color
+        }
 
         codeInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val text = s.toString()
-                val spannable = SpannableStringBuilder(text)
-                val ignoredRanges = findIgnoredRanges(text)
-
-                spannable.getSpans(0, spannable.length, ForegroundColorSpan::class.java).forEach {
-                    spannable.removeSpan(it)
-                }
-
-                applyHighlight(spannable, datatypes, dtColor, text, ignoredRanges)
-                applyHighlight(spannable, keywords, kwColor, text, ignoredRanges)
-
+            override fun afterTextChanged(s: Editable?) {
 
                 codeInput.removeTextChangedListener(this)
-                codeInput.text = spannable
-                codeInput.setSelection(spannable.length)
-                codeInput.addTextChangedListener(this)
 
-                val lines = codeInput.lineCount
-                lineNumbers.text = buildString {
-                    for (i in 1..lines) append("$i\n")
+                val text = s.toString()
+
+                val spannable = SpannableStringBuilder(text)
+
+                val ignoredRanges = findIgnoredRanges(text)
+
+                for ((words, color) in wordColorMap) {
+                    applyHighlight(spannable, words, color, text, ignoredRanges)
                 }
+
+                applyCommentHighlight(spannable, text, commentColor)
+
+                val selectionStart = codeInput.selectionStart
+                val selectionEnd = codeInput.selectionEnd
+                codeInput.text = spannable
+                codeInput.setSelection(
+                    selectionStart.coerceAtMost(codeInput.text.length),
+                    selectionEnd.coerceAtMost(codeInput.text.length)
+                )
+
+
+                codeInput.addTextChangedListener(this)
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
 
         lexButton.setOnClickListener{
             val code: String = codeInput.text.toString()
@@ -174,7 +205,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-
 }
 
 @Composable
