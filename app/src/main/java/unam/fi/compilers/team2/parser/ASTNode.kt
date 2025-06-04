@@ -78,4 +78,3 @@ data class Variable(val name: String) : Expression() {
 data class Grouping(val expr: Expression) : Expression() {
     override fun toString() = "Grouping($expr)"
 }
-

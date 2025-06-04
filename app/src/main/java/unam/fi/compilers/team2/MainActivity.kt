@@ -25,7 +25,6 @@ import android.text.Spannable
 import android.graphics.Color
 import android.widget.ScrollView
 import unam.fi.compilers.team2.parser.ParserOutputActivity
-import unam.fi.compilers.team2.parser.ParserTester
 
 
 class MainActivity : AppCompatActivity() {
@@ -75,35 +74,6 @@ class MainActivity : AppCompatActivity() {
         return ignoredRanges
     }
 
-    private fun applyCommentHighlight(spannable: Editable, text: String, color: Int) {
-        var index = 0
-        val length = text.length
-        while (index < length) {
-            if (index + 1 < length && text[index] == '/' && text[index + 1] == '/') {
-                val end = text.indexOf('\n', index).let { if (it == -1) length else it }
-                spannable.setSpan(
-                    ForegroundColorSpan(color),
-                    index,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                index = end
-            } else {
-                index++
-            }
-        }
-    }
-
-    private fun updateLineNumbers() {
-        val lines = codeInput.lineCount
-        val lineText = buildString {
-            for (i in 1..lines) {
-                append("$i\n")
-            }
-        }
-        lineNumbers.text = lineText.trimEnd()
-    }
-
     private fun applyHighlight(
         spannable: Spannable,
         words: List<String>,
@@ -148,6 +118,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun applyCommentHighlight(spannable: Editable, text: String, color: Int) {
+        var index = 0
+        val length = text.length
+        while (index < length) {
+            if (index + 1 < length && text[index] == '/' && text[index + 1] == '/') {
+                val end = text.indexOf('\n', index).let { if (it == -1) length else it }
+                spannable.setSpan(
+                    ForegroundColorSpan(color),
+                    index,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                index = end
+            } else {
+                index++
+            }
+        }
+    }
+
+    private fun updateLineNumbers() {
+        val lines = codeInput.lineCount
+        val lineText = buildString {
+            for (i in 1..lines) {
+                append("$i\n")
+            }
+        }
+        lineNumbers.text = lineText.trimEnd()
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -157,11 +156,6 @@ class MainActivity : AppCompatActivity() {
         lineNumbers = findViewById(R.id.line_numbers)
         lexButton = findViewById(R.id.lex_button)
         parseButton = findViewById(R.id.parse_button)
-
-        // Parser test, nuke later
-
-        val parserTester = ParserTester(this)
-        parserTester.testParser()
 
         val commentColor = Color.parseColor("#A9D6BB")
 
@@ -205,6 +199,7 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
 
 
         lexButton.setOnClickListener{
@@ -255,6 +250,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
