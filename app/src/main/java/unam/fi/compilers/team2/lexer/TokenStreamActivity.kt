@@ -15,6 +15,8 @@ class TokenStreamActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_token_stream)
 
+        supportActionBar?.title = "Lexer"
+
         val output = intent.getStringExtra("Lexer Output")
         val tokenOutputView = findViewById<TextView>(R.id.token_output)
 
