@@ -1,0 +1,16 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/tree_output"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:lineSpacingExtra="6dp"
+        android:typeface="monospace"
+        android:textColor="@color/tokenTextColor"
+        android:padding="12dp"/>
+</ScrollView>

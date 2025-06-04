@@ -24,8 +24,8 @@ import android.text.style.ForegroundColorSpan
 import android.text.Spannable
 import android.graphics.Color
 import android.widget.ScrollView
-
-
+import unam.fi.compilers.team2.parser.ParserOutputActivity
+import unam.fi.compilers.team2.parser.ParserTester
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var codeInput: EditText
     private lateinit var lineNumbers: TextView
     private lateinit var lexButton: Button
+    private lateinit var parseButton: Button
 
     private fun loadWords(filename: String): List<String> {
         val inputStream = assets.open(filename)
@@ -141,6 +142,12 @@ class MainActivity : AppCompatActivity() {
         codeInput = findViewById(R.id.code_input)
         lineNumbers = findViewById(R.id.line_numbers)
         lexButton = findViewById(R.id.lex_button)
+        parseButton = findViewById(R.id.parse_button)
+
+        // Parser test, nuke later
+
+        val parserTester = ParserTester(this)
+        parserTester.testParser()
 
         val commentColor = Color.parseColor("#A9D6BB")
 
@@ -203,6 +210,37 @@ class MainActivity : AppCompatActivity() {
             val intent: Intent = Intent(this, TokenStreamActivity::class.java)
             intent.putExtra("Lexer Output",tokenOutput)
             startActivity(intent)
+        }
+
+        parseButton.setOnClickListener{
+            val code: String = codeInput.text.toString()
+            val lexemes: ArrayList<StringBuilder> = code.lines().map{StringBuilder(it)} as ArrayList<StringBuilder>
+
+            val lexer = unam.fi.compilers.team2.lexer.Lexer(lexemes,this)
+            val tokens = lexer.tokenize()
+            try{
+                val parser = unam.fi.compilers.team2.parser.Parser(lexer)
+                val program = parser.parseProgram()
+
+                println("✅ Parsing completed successfully!")
+                println("\nGenerated AST:")
+                println(program)
+
+                val success = "✅ Parsing completed successfully!\n\n"
+                val ASTsuccess = success + "Generated Abstract Syntax Tree:\n"
+                val parserOutput = ASTsuccess + program.toString()
+
+                val intent: Intent = Intent(this, ParserOutputActivity::class.java)
+                intent.putExtra("Parser Output", parserOutput)
+                startActivity(intent)
+            }catch(e:Exception){
+                val parserOutput = "❌ Parsing failed: ${e.message}"
+                val intent: Intent = Intent(this, ParserOutputActivity::class.java)
+                intent.putExtra("Parser Output", parserOutput)
+                startActivity(intent)
+                //println("❌ Parsing failed: ${e.message}")
+            }
+
         }
     }
 }
