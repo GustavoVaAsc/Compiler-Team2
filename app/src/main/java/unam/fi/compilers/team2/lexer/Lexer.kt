@@ -90,6 +90,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                 lexemes[i] = StringBuilder(clearedLexeme)
             }
 
+            /*
             val noLitLexeme: String = litRegex.replace(clearedLexeme) { matchResult ->
                 " ".repeat(matchResult.value.length)
             }.trim()
@@ -102,21 +103,64 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                 " ".repeat(matchResult.value.length)
             }
 
+             */
+            val lineTokens = mutableListOf<Token>()
 
+            fun classifyAndCollect(regex: Regex, category: String) {
+                for (match in regex.findAll(clearedLexeme)) {
+                    val tokenValue = match.value
+                    val col = match.range.first + 1
+                    val range = match.range
 
+                    // Skip if overlapping with existing token
+                    if (lineTokens.any {
+                            it.getTokenColumn() - 1 <= range.last &&
+                                    range.first <= (it.getTokenColumn() - 1 + it.getTokenValue().length - 1)
+                        }) continue
+
+                    val token = when (category) {
+                        "Identifier" -> {
+                            if (tokenValue !in keywords) Token(category, tokenValue, i + 1, col)
+                            else null
+                        }
+                        else -> Token(category, tokenValue, i + 1, col)
+                    }
+
+                    token?.let {
+                        lineTokens.add(it)
+                        token_classification.getOrPut(category) { mutableSetOf() }.add(tokenValue)
+                    }
+                }
+            }
+
+            /*
             // TODO: Apply DRY to this:
-            classifyAndCount(litRegex, clearedLexeme, "Literal", i)
+            //classifyAndCount(litRegex, clearedLexeme, "Literal", i)
             classifyAndCount(litRegex, clearedLexeme, "STRING", i)
-            classifyAndCount(floatRegex, noIdentifiersLexeme, "FLOAT", i)
-            classifyAndCount(intRegex, noIdentifiersLexeme, "INTEGER", i)
             classifyAndCount(keywordRegex, noLitLexeme, "Keyword", i)
             classifyAndCount(datatypeRegex, noLitLexeme, "Datatype", i)
             classifyAndCount(boolRegex, noLitLexeme, "Boolean", i)
             classifyAndCount(relRegex, noLitLexeme, "Relation", i)
             classifyAndCount(opRegex, noLitLexeme, "Operator", i)
             classifyAndCount(puntRegex, noLitLexeme, "Punctuation", i)
+            classifyAndCount(floatRegex, noIdentifiersLexeme, "FLOAT", i)
+            classifyAndCount(intRegex, noIdentifiersLexeme, "INTEGER", i)
             classifyAndCount(idRegex, noDatatypeLexeme, "Identifier", i)
+            */
+            classifyAndCollect(litRegex, "STRING")
+            classifyAndCollect(keywordRegex, "Keyword")
+            classifyAndCollect(datatypeRegex, "Datatype")
+            classifyAndCollect(boolRegex, "Boolean")
+            classifyAndCollect(relRegex, "Relation")
+            classifyAndCollect(opRegex, "Operator")
+            classifyAndCollect(puntRegex, "Punctuation")
+            classifyAndCollect(floatRegex, "FLOAT")
+            classifyAndCollect(intRegex, "INTEGER")
+            classifyAndCollect(idRegex, "Identifier")
 
+            // Sort tokens by position in line
+            lineTokens.sortBy { it.getTokenColumn() }
+            token_stream.addAll(lineTokens)
         }
         return this.token_stream
     }

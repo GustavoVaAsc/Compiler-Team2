@@ -14,10 +14,16 @@ class ParserDriver (private val parser: Parser) {
     // Maps Lexer token types to parser Terminal objects
     private fun mapTokenToTerminal(token: Token): Terminal {
         return when (token.getTokenType()) {
-            // Handle numeric literals first
             "INTEGER" -> Terminal("INTEGER")
             "FLOAT" -> Terminal("FLOAT")
             "STRING" -> Terminal("STRING")
+            "Constant" -> {  // Fallback for numeric constants
+                when {
+                    token.getTokenValue().matches(Regex("-?\\d+")) -> Terminal("INTEGER")
+                    token.getTokenValue().matches(Regex("-?\\d+\\.\\d*")) -> Terminal("FLOAT")
+                    else -> throw ParseError("Invalid constant: ${token.getTokenValue()}")
+                }
+            }
 
             // Handle keywords
             "Keyword" -> {

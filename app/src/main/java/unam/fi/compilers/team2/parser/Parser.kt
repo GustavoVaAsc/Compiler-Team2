@@ -409,8 +409,6 @@ class Parser {
                             println("  REDUCE by rule $reduceProductionString")
 
 
-                            // Call your conflict resolver
-                            // Ensure resolveConflict is adapted to take existingShiftAction and reduceProduction
                             action_table[state.id to lookaheadTerminal] =
                                 resolveS_R_Conflict(state.id, lookaheadTerminal, item.production, existingAction)
                             println("  Resolved to: ${action_table[state.id to lookaheadTerminal]}")
@@ -445,12 +443,7 @@ class Parser {
                             }
                             println("  New Reduce: $newReduceProductionString")
 
-                            // R/R conflicts are usually grammar errors for LALR(1).
-                            // You might prefer the rule that appears first in the grammar, or throw an error.
-                            // For now, let's say the existing one wins (or you can choose)
-                            // action_table[state.id to lookaheadTerminal] = existingAction; // Or newAction
                         }
-                        // else: existingAction is Accept - this is highly unusual to conflict with.
                     } else {
                         // No conflict, just add the new action
                         action_table[state.id to lookaheadTerminal] = newAction
@@ -460,7 +453,6 @@ class Parser {
         }
     }
 
-    // Adapt your resolveConflict method slightly
     private fun resolveS_R_Conflict(stateId: Int, terminal: Terminal, reduceProduction: Production, shiftAction: Action.Shift): Action {
         val reduceActionIfChosen = Action.Reduce(reduceProduction)
 
@@ -480,14 +472,10 @@ class Parser {
             }
             termPrec == 0 && prodPrec == 0 -> { // No precedence defined for either
                 println("    WARNING: Ambiguity (no precedence for terminal or rule). Defaulting to SHIFT.")
-                // Defaulting to shift is a common strategy for S/R conflicts without explicit precedence.
                 shiftAction
             }
-            else -> { // Equal non-zero precedence: use associativity (assuming left for operators)
+            else -> {
                 println("    Ambiguity (equal precedence). Defaulting to REDUCE (for left-associativity).")
-                // For left-associative operators like +, -, *, /, preferring reduce implements left-associativity.
-                // E.g., for "E + E + E", (E+E) reduces first.
-                // If you had right-associative operators, you'd prefer shift.
                 reduceActionIfChosen
             }
         }

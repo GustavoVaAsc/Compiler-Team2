@@ -10,7 +10,7 @@ class ParserTester(val context: Context) {
         const int MAX = 1005;
         
         function int main() {
-            writeln("Hola mundo!")
+            writeln("Hola mundo!");
             return 0;
         }
     """.trimIndent()
