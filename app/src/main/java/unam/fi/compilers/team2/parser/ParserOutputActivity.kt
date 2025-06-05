@@ -1,12 +1,10 @@
 package unam.fi.compilers.team2.parser
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +25,25 @@ class ParserOutputActivity : AppCompatActivity() {
             val formatted = SpannableStringBuilder()
             val lines = output.lines()
 
-            treeOutputView.text = output
+            for (line in lines) {
+                val start = formatted.length
+                formatted.append(line + "\n")
+                val end = formatted.length
+
+                // Negrita solo a líneas que parecen encabezados de nodos (sin ":")
+                val trimmed = line.trim()
+                if (!trimmed.contains(":")) {
+                    formatted.setSpan(
+                        StyleSpan(Typeface.BOLD),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                    )
+                }
+            }
+
+            treeOutputView.typeface = Typeface.MONOSPACE
+            treeOutputView.text = formatted
         }
     }
 }

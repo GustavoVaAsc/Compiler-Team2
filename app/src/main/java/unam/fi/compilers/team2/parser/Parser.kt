@@ -3,7 +3,9 @@ package unam.fi.compilers.team2.parser
 import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
-/*Program         ::= { Declaration }
+/*
+
+Program         ::= { Declaration }
 
 Declaration     ::= ClassDecl | FunctionDecl | Statement
 
@@ -60,17 +62,29 @@ Primary         ::= Identifier
 
 Literal         ::= INTEGER | FLOAT | STRING
 
-BooleanLiteral  ::= "true" | "false"*/
+BooleanLiteral  ::= "true" | "false"
+*/
 
 class Parser(private val lexer: Lexer) {
     private val tokens: List<Token> = lexer.tokenize()
     private var current: Int = 0
 
+    val derivation = StringBuilder()
+    private var indentLevel = 0
+
+    private fun log(rule: String) {
+        derivation.appendLine(rule)
+        derivation.appendLine()
+    }
+
     fun parseProgram(): Program {
+        log("Program → Declaration*")
+        indentLevel++
         val declarations = mutableListOf<ASTNode>()
         while (!isAtEnd()) {
             declarations.add(parseDeclaration())
         }
+        indentLevel--
         return Program(declarations)
     }
 
@@ -83,6 +97,8 @@ class Parser(private val lexer: Lexer) {
     }
 
     private fun parseClassDeclaration(): ClassDeclaration {
+        log("ClassDeclaration → 'class' Identifier '{' Declaration* '}'")
+        indentLevel++
         consume("class", "Expect 'class'.")
         val name = consumeType("Identifier", "Expect class name.")
         consume("{", "Expect '{' before class body.")
@@ -91,26 +107,32 @@ class Parser(private val lexer: Lexer) {
             members.add(parseDeclaration())
         }
         consume("}", "Expect '}' after class body.")
+        indentLevel--
         return ClassDeclaration(name.getTokenValue(), members)
     }
 
     private fun parseFunctionDeclaration(): FunctionDeclaration {
+        log("FunctionDeclaration → 'function' Datatype Identifier '(' ')' '{' Statement* '}'")
+        indentLevel++
         consume("function", "Expect 'function'.")
         val returnType = consumeType("Datatype", "Expect return type.").getTokenValue()
         val name = consumeType("Identifier", "Expect function name.").getTokenValue()
         consume("(", "Expect '('.")
-        consume(")", "Expect ')'.") // Simplified: no parameters
+        consume(")", "Expect ')'.")
         consume("{", "Expect '{' before function body.")
         val body = mutableListOf<ASTNode>()
         while (!check("}")) {
             body.add(parseStatement())
         }
         consume("}", "Expect '}' after function body.")
+        indentLevel--
         return FunctionDeclaration(returnType, name, body)
     }
 
     private fun parseStatement(): Statement {
-        return when {
+        log("Statement")
+        indentLevel++
+        val stmt = when {
             peek().getTokenValue() == "if" -> parseIfStatement()
             peek().getTokenValue() == "while" -> parseWhileStatement()
             peek().getTokenValue() == "for" -> parseForStatement()
@@ -119,17 +141,24 @@ class Parser(private val lexer: Lexer) {
             peek().getTokenType() == "Datatype" -> parseVarDecl()
             else -> parseExpressionStatement()
         }
+        indentLevel--
+        return stmt
     }
 
     private fun parseVarDecl(): Statement {
-        val type = advance().getTokenValue()  // Consume datatype
+        log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")
+        indentLevel++
+        val type = advance().getTokenValue()
         val name = consumeType("Identifier", "Expect variable name.").getTokenValue()
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
+        indentLevel--
         return VariableDeclaration(type, name, initializer)
     }
 
     private fun parseIfStatement(): IfStatement {
+        log("IfStatement → 'if' '(' Expression ')' '{' Statement* '}' ['else' '{' Statement* '}']")
+        indentLevel++
         consume("if", "Expect 'if'.")
         consume("(", "Expect '('.")
         val condition = parseExpression()
@@ -149,10 +178,13 @@ class Parser(private val lexer: Lexer) {
             consume("}", "Expect '}' after else branch.")
             elseStmts
         } else null
+        indentLevel--
         return IfStatement(condition, thenBranch, elseBranch)
     }
 
     private fun parseWhileStatement(): WhileStatement {
+        log("WhileStatement → 'while' '(' Expression ')' '{' Statement* '}'")
+        indentLevel++
         consume("while", "Expect 'while'.")
         consume("(", "Expect '('.")
         val condition = parseExpression()
@@ -163,46 +195,41 @@ class Parser(private val lexer: Lexer) {
             body.add(parseStatement())
         }
         consume("}", "Expect '}' after body.")
+        indentLevel--
         return WhileStatement(condition, body)
     }
 
     private fun parseForStatement(): ForStatement {
+        log("ForStatement → 'for' '(' [init] ';' [cond] ';' [update] ')' '{' Statement* '}'")
+        indentLevel++
         consume("for", "Expect 'for'.")
         consume("(", "Expect '('.")
-
-        // Initializer (optional)
         val init = if (check(";")) {
-            advance() // Consume ;
+            advance()
             null
         } else {
-            if (peek().getTokenType() == "Datatype") {
-                parseVarDeclNoSemi()
-            } else {
+            if (peek().getTokenType() == "Datatype") parseVarDeclNoSemi() else {
                 val expr = parseExpression()
                 consume(";", "Expect ';' after initializer.")
                 expr
             }
         }
-
-        // Condition (optional)
         val condition = if (check(";")) null else parseExpression()
         consume(";", "Expect ';' after condition.")
-
-        // Update (optional)
         val update = if (check(")")) null else parseExpression()
         consume(")", "Expect ')' after for clauses.")
-
         consume("{", "Expect '{'.")
         val body = mutableListOf<ASTNode>()
         while (!check("}")) {
             body.add(parseStatement())
         }
         consume("}", "Expect '}' after body.")
+        indentLevel--
         return ForStatement(init, condition, update, body)
     }
 
     private fun parseVarDeclNoSemi(): VariableDeclaration {
-        val type = advance().getTokenValue()  // Consume datatype
+        val type = advance().getTokenValue()
         val name = consumeType("Identifier", "Expect variable name.").getTokenValue()
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
@@ -210,41 +237,53 @@ class Parser(private val lexer: Lexer) {
     }
 
     private fun parseReturnStatement(): ReturnStatement {
+        log("ReturnStatement → 'return' [Expression] ';'")
+        indentLevel++
         consume("return", "Expect 'return'.")
         val value = if (!check(";")) parseExpression() else null
         consume(";", "Expect ';' after return.")
+        indentLevel--
         return ReturnStatement(value)
     }
 
     private fun parsePrintStatement(): PrintStatement {
+        log("PrintStatement → 'writeln' '(' Expression ')' ';'")
+        indentLevel++
         consume("writeln", "Expect 'writeln'.")
         consume("(", "Expect '(' after 'writeln'.")
         val value = parseExpression()
         consume(")", "Expect ')' after expression.")
         consume(";", "Expect ';' after statement.")
+        indentLevel--
         return PrintStatement(value)
     }
 
     private fun parseExpressionStatement(): Statement {
+        log("ExpressionStatement → Expression ';'")
+        indentLevel++
         val expr = parseExpression()
         consume(";", "Expect ';' after expression.")
+        indentLevel--
         return ExpressionStatement(expr)
     }
 
-    // Expression parsing with logical operators and assignment
-    private fun parseExpression(): Expression = parseAssignment()
+    private fun parseExpression(): Expression {
+        log("Expression → Assignment")
+        indentLevel++
+        val expr = parseAssignment()
+        indentLevel--
+        return expr
+    }
 
     private fun parseAssignment(): Expression {
         val expr = parseLogicalOr()
-
         if (match("=")) {
             if (expr is Variable) {
                 val value = parseAssignment()
-                return Assignment(expr.name, value)  // Now valid Expression
+                return Assignment(expr.name, value)
             }
             throw error(previous(), "Invalid assignment target")
         }
-
         return expr
     }
 
@@ -333,7 +372,6 @@ class Parser(private val lexer: Lexer) {
         }
     }
 
-    // Token helper functions
     private fun match(vararg values: String): Boolean {
         for (value in values) {
             if (check(value)) {
@@ -375,4 +413,9 @@ class Parser(private val lexer: Lexer) {
     private fun error(token: Token, message: String): RuntimeException {
         return RuntimeException("[Line ${token.getTokenLine()}] Error at '${token.getTokenValue()}': $message")
     }
+
+    fun getDerivationOutput(): String {
+        return derivation.toString()
+    }
 }
+

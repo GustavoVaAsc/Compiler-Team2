@@ -249,9 +249,13 @@ class MainActivity : AppCompatActivity() {
                 println("\nGenerated AST:")
                 println(program)
 
+                val derivationText = parser.derivation.toString()
+
                 val success = "✅ Parsing completed successfully!\n\n"
-                val ASTsuccess = success + "Generated Abstract Syntax Tree:\n"
-                val parserOutput = ASTsuccess + program.toString()
+                val ASTsuccess = success + "Generated Abstract Syntax Tree:\n" + program.toString() + "\n\n"
+                val derivationHeader = "Derivation steps:\n"
+
+                val parserOutput = ASTsuccess + derivationHeader + derivationText
 
                 val intent: Intent = Intent(this, ParserOutputActivity::class.java)
                 intent.putExtra("Parser Output", parserOutput)
@@ -261,10 +265,9 @@ class MainActivity : AppCompatActivity() {
                 val intent: Intent = Intent(this, ParserOutputActivity::class.java)
                 intent.putExtra("Parser Output", parserOutput)
                 startActivity(intent)
-                //println("❌ Parsing failed: ${e.message}")
             }
-
         }
+
     }
 }
 
