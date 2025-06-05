@@ -137,6 +137,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun applyStringHighlight(editable: Editable, text: String, color: Int) {
+        val regex = Regex("\"(\\\\.|[^\"\\\\])*\"")
+        val matches = regex.findAll(text)
+        for (match in matches) {
+            val start = match.range.first
+            val end = match.range.last + 1
+            editable.setSpan(
+                ForegroundColorSpan(color),
+                start,
+                end,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+
     private fun updateLineNumbers() {
         val lines = codeInput.lineCount
         val lineText = buildString {
@@ -157,13 +173,15 @@ class MainActivity : AppCompatActivity() {
         lexButton = findViewById(R.id.lex_button)
         parseButton = findViewById(R.id.parse_button)
 
-        val commentColor = Color.parseColor("#A9D6BB")
+        val commentColor = Color.parseColor("#88D8B0")
+        val stringColor = Color.parseColor("#CBAACB")
+
 
         // Define colors for words
         val fileColorMap = mapOf(
             "Datatypes.txt" to Color.parseColor("#E4195C"),
-            "Keywords.txt" to Color.parseColor("#2172ff"),
-            "GroupS.txt" to Color.parseColor("#F2C572"),
+            "Keywords.txt" to Color.parseColor("#3F51B5"),
+            "GroupS.txt" to Color.parseColor("#FFB84C"),
         )
         // Load words from .txt
         val wordColorMap = fileColorMap.map { (file, color) ->
@@ -187,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                     for ((words, color) in wordColorMap) {
                         applyHighlight(editable, words, color, text, ignoredRanges)
                     }
-
+                    applyStringHighlight(editable, text, stringColor)
                     applyCommentHighlight(editable, text, commentColor)
                 }
 
