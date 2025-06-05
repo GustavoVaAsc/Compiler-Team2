@@ -3,64 +3,6 @@ package unam.fi.compilers.team2.parser
 import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
-/*Program         ::= { Declaration }
-
-Declaration     ::= ClassDecl | FunctionDecl | Statement
-
-ClassDecl       ::= "class" Identifier "{" { Declaration } "}"
-
-FunctionDecl    ::= "function" Datatype Identifier "(" ")" "{" { Statement } "}"
-
-Statement       ::= IfStatement
-                 | WhileStatement
-                 | ForStatement
-                 | ReturnStatement
-                 | PrintStatement
-                 | VarDecl ";"
-                 | ExpressionStatement
-
-IfStatement     ::= "if" "(" Expression ")" "{" { Statement } "}" [ "else" "{" { Statement } "}" ]
-
-WhileStatement  ::= "while" "(" Expression ")" "{" { Statement } "}"
-
-ForStatement    ::= "for" "(" [VarDecl | Expression] ";" Expression? ";" Expression? ")" "{" { Statement } "}"
-
-ReturnStatement ::= "return" [ Expression ] ";"
-
-PrintStatement  ::= "writeln" "(" Expression ")" ";"
-
-VarDecl         ::= Datatype Identifier [ "=" Expression ]
-
-ExpressionStatement ::= Expression ";"
-
-Expression      ::= Assignment
-
-Assignment      ::= LogicalOr [ "=" Assignment ]
-                 | LogicalOr
-
-LogicalOr       ::= LogicalAnd { "||" LogicalAnd }
-
-LogicalAnd      ::= Equality { "&&" Equality }
-
-Equality        ::= Comparison { ("==" | "!=") Comparison }
-
-Comparison      ::= Term { (">" | ">=" | "<" | "<=") Term }
-
-Term            ::= Factor { ("+" | "-") Factor }
-
-Factor          ::= Unary { ("*" | "/" | "%") Unary }
-
-Unary           ::= ( "!" | "-" ) Unary
-                 | Primary
-
-Primary         ::= Identifier
-                 | Literal
-                 | "(" Expression ")"
-                 | BooleanLiteral
-
-Literal         ::= INTEGER | FLOAT | STRING
-
-BooleanLiteral  ::= "true" | "false"*/
 
 class Parser(private val lexer: Lexer) {
     private val tokens: List<Token> = lexer.tokenize()
@@ -444,7 +386,6 @@ class Parser(private val lexer: Lexer) {
         return RuntimeException("[Line ${token.getTokenLine()}] Error at '${token.getTokenValue()}': $message")
     }
 
-    // Nuevo método público para obtener la derivación
     fun getDerivationOutput(): String {
         return derivation.toString()
     }
