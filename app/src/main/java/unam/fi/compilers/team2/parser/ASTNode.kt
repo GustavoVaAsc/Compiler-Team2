@@ -16,6 +16,10 @@ data class FunctionDeclaration(val returnType: String, val name: String, val bod
     override fun toString() = "FunctionDeclaration(returnType='$returnType', name='$name', body=[\n${body.joinToString(",\n")}\n])"
 }
 
+data class VariableDeclaration(val type: String, val name: String, val value: Expression?) : Statement() {
+    override fun toString() = "VariableDeclaration(type='$type', name='$name', value=${value?.toString() ?: "null"})"
+}
+
 // Statements
 sealed class Statement : ASTNode()
 
@@ -23,9 +27,6 @@ data class ExpressionStatement(val expr: Expression) : Statement() {
     override fun toString() = "ExpressionStatement(expr=$expr)"
 }
 
-data class VariableDeclaration(val type: String, val name: String, val value: Expression?) : Statement() {
-    override fun toString() = "VariableDeclaration(type='$type', name='$name', value=${value?.toString() ?: "null"})"
-}
 
 data class Assignment(val name: String, val value: Expression) : Expression() {
     override fun toString() = "Assignment(name='$name', value=$value)"

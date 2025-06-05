@@ -3,7 +3,9 @@ package unam.fi.compilers.team2.parser
 import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
-/*Program         ::= { Declaration }
+/* K* GRAMMAR IN EBNF
+
+Program         ::= { Declaration }
 
 Declaration     ::= ClassDecl | FunctionDecl | Statement
 
@@ -60,7 +62,9 @@ Primary         ::= Identifier
 
 Literal         ::= INTEGER | FLOAT | STRING
 
-BooleanLiteral  ::= "true" | "false"*/
+BooleanLiteral  ::= "true" | "false"
+
+*/
 
 class Parser(private val lexer: Lexer) {
     private val tokens: List<Token> = lexer.tokenize()
