@@ -324,7 +324,6 @@ class SemanticAnalyzer {
     }
 
     private fun getNodeLine(node: ASTNode): Int{
-
-        return -1
+        return node.token?.getTokenLine() ?: -1
     }
 }

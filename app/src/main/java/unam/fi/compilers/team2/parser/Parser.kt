@@ -49,7 +49,7 @@ class Parser(private val lexer: Lexer) {
     private fun parseClassDeclaration(): ClassDeclaration {
         log("ClassDeclaration → 'class' Identifier '{' Declaration* '}'")
         indentLevel++
-        consume("class", "Expect 'class'.")
+        val classToken = consume("class", "Expect 'class'.")
         val name = consumeType("Identifier", "Expect class name.")
         consume("{", "Expect '{' before class body.")
         val members = mutableListOf<ASTNode>()
@@ -58,7 +58,7 @@ class Parser(private val lexer: Lexer) {
         }
         consume("}", "Expect '}' after class body.")
         indentLevel--
-        return ClassDeclaration(name.getTokenValue(), members)
+        return ClassDeclaration(name.getTokenValue(), members,classToken)
     }
 
     private fun parseFunctionDeclaration(): FunctionDeclaration {
@@ -120,29 +120,30 @@ class Parser(private val lexer: Lexer) {
     private fun parseVarDecl(): Statement {
         log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")
         indentLevel++
-        val type = advance().getTokenValue()
+        val typeToken = advance()
         val name = consumeType("Identifier", "Expect variable name.").getTokenValue()
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
         indentLevel--
-        return VariableDeclaration(type, name, initializer)
+        return VariableDeclaration(typeToken.getTokenType(), name, initializer,typeToken)
     }
 
     private fun parseIfStatement(): IfStatement {
         log("IfStatement → 'if' '(' Expression ')' '{' Statement* '}' ['else' '{' Statement* '}']")
         indentLevel++
-        consume("if", "Expect 'if'.")
+        val ifToken = consume("if", "Expect 'if'.")
         consume("(", "Expect '('.")
         val condition = parseExpression()
         consume(")", "Expect ')'.")
-        consume("{", "Expect '{'.")
+        val thenStartToken = consume("{", "Expect '{'.")
         val thenBranch = mutableListOf<ASTNode>()
         while (!check("}")) {
             thenBranch.add(parseStatement())
         }
         consume("}", "Expect '}' after then branch.")
         val elseBranch = if (match("else")) {
-            consume("{", "Expect '{'.")
+            val elseToken = previous()
+            val elseStartToken = consume("{", "Expect '{'.")
             val elseStmts = mutableListOf<ASTNode>()
             while (!check("}")) {
                 elseStmts.add(parseStatement())
@@ -151,30 +152,30 @@ class Parser(private val lexer: Lexer) {
             elseStmts
         } else null
         indentLevel--
-        return IfStatement(condition, thenBranch, elseBranch)
+        return IfStatement(condition, thenBranch, elseBranch, token = ifToken)
     }
 
     private fun parseWhileStatement(): WhileStatement {
         log("WhileStatement → 'while' '(' Expression ')' '{' Statement* '}'")
         indentLevel++
-        consume("while", "Expect 'while'.")
+        val whileToken  = consume("while", "Expect 'while'.")
         consume("(", "Expect '('.")
         val condition = parseExpression()
         consume(")", "Expect ')'.")
-        consume("{", "Expect '{'.")
+        val bodyStartToken = consume("{", "Expect '{'.")
         val body = mutableListOf<ASTNode>()
         while (!check("}")) {
             body.add(parseStatement())
         }
         consume("}", "Expect '}' after body.")
         indentLevel--
-        return WhileStatement(condition, body)
+        return WhileStatement(condition, body, token = whileToken)
     }
 
     private fun parseForStatement(): ForStatement {
         log("ForStatement → 'for' '(' [init] ';' [cond] ';' [update] ')' '{' Statement* '}'")
         indentLevel++
-        consume("for", "Expect 'for'.")
+        val forToken = consume("for", "Expect 'for'.")
         consume("(", "Expect '('.")
         val init = if (check(";")) {
             advance()
@@ -190,14 +191,14 @@ class Parser(private val lexer: Lexer) {
         consume(";", "Expect ';' after condition.")
         val update = if (check(")")) null else parseExpression()
         consume(")", "Expect ')' after for clauses.")
-        consume("{", "Expect '{'.")
+        val bodyStartToken  = consume("{", "Expect '{'.")
         val body = mutableListOf<ASTNode>()
         while (!check("}")) {
             body.add(parseStatement())
         }
         consume("}", "Expect '}' after body.")
         indentLevel--
-        return ForStatement(init, condition, update, body)
+        return ForStatement(init, condition, update, body, token = forToken)
     }
 
     private fun parseVarDeclNoSemi(): VariableDeclaration {
@@ -211,11 +212,11 @@ class Parser(private val lexer: Lexer) {
     private fun parseReturnStatement(): ReturnStatement {
         log("ReturnStatement → 'return' [Expression] ';'")
         indentLevel++
-        consume("return", "Expect 'return'.")
+        val returnToken = consume("return", "Expect 'return'.")
         val value = if (!check(";")) parseExpression() else null
         consume(";", "Expect ';' after return.")
         indentLevel--
-        return ReturnStatement(value)
+        return ReturnStatement(value, returnToken)
     }
 
     private fun parsePrintStatement(): PrintStatement {
@@ -252,7 +253,7 @@ class Parser(private val lexer: Lexer) {
         if (match("=")) {
             if (expr is Variable) {
                 val value = parseAssignment()
-                return Assignment(expr.name, value)
+                return Assignment(expr.name, value, previous())
             }
             throw error(previous(), "Invalid assignment target")
         }

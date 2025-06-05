@@ -244,6 +244,18 @@ class MainActivity : AppCompatActivity() {
             try{
                 val parser = unam.fi.compilers.team2.parser.Parser(lexer)
                 val program = parser.parseProgram()
+                val semantic = unam.fi.compilers.team2.semantic.SemanticAnalyzer()
+                val semanticErrors = semantic.analyze(program)
+
+                val semanticOutput = StringBuilder("")
+                if(semanticErrors.isEmpty()){
+                    semanticOutput.append("✅ There's no semantic errors!")
+                }else{
+                    semanticOutput.append("❌ Error(s) in semantic analysis: \n\n")
+                    for(error in semanticErrors){
+                        semanticOutput.append(error).append("\n")
+                    }
+                }
 
                 println("✅ Parsing completed successfully!")
                 println("\nGenerated AST:")
@@ -257,9 +269,12 @@ class MainActivity : AppCompatActivity() {
 
                 val parserOutput = ASTsuccess + derivationHeader + derivationText
 
+                val fullOutput = StringBuilder(parserOutput).append(semanticOutput)
+
                 val intent: Intent = Intent(this, ParserOutputActivity::class.java)
-                intent.putExtra("Parser Output", parserOutput)
+                intent.putExtra("Parser Output", fullOutput.toString())
                 startActivity(intent)
+
             }catch(e:Exception){
                 val parserOutput = "❌ Parsing failed: ${e.message}"
                 val intent: Intent = Intent(this, ParserOutputActivity::class.java)
