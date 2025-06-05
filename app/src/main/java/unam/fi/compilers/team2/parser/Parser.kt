@@ -88,11 +88,21 @@ class Parser(private val lexer: Lexer) {
 
     private fun parseDeclaration(): ASTNode {
         return when (peek().getTokenValue()) {
-            "class" -> parseClassDeclaration()
-            "function" -> parseFunctionDeclaration()
-            else -> parseStatement()
+            "class" -> {
+                log("Declaration → ClassDeclaration")
+                parseClassDeclaration()
+            }
+            "function" -> {
+                log("Declaration → FunctionDeclaration")
+                parseFunctionDeclaration()
+            }
+            else -> {
+                log("Declaration → Statement")
+                parseStatement()
+            }
         }
     }
+
 
     private fun parseClassDeclaration(): ClassDeclaration {
         log("ClassDeclaration → 'class' Identifier '{' Declaration* '}'")
@@ -128,20 +138,42 @@ class Parser(private val lexer: Lexer) {
     }
 
     private fun parseStatement(): Statement {
-        log("Statement")
         indentLevel++
         val stmt = when {
-            peek().getTokenValue() == "if" -> parseIfStatement()
-            peek().getTokenValue() == "while" -> parseWhileStatement()
-            peek().getTokenValue() == "for" -> parseForStatement()
-            peek().getTokenValue() == "return" -> parseReturnStatement()
-            peek().getTokenValue() == "writeln" -> parsePrintStatement()
-            peek().getTokenType() == "Datatype" -> parseVarDecl()
-            else -> parseExpressionStatement()
+            peek().getTokenValue() == "if" -> {
+                log("Statement → IfStatement")
+                parseIfStatement()
+            }
+            peek().getTokenValue() == "while" -> {
+                log("Statement → WhileStatement")
+                parseWhileStatement()
+            }
+            peek().getTokenValue() == "for" -> {
+                log("Statement → ForStatement")
+                parseForStatement()
+            }
+            peek().getTokenValue() == "return" -> {
+                log("Statement → ReturnStatement")
+                parseReturnStatement()
+            }
+            peek().getTokenValue() == "writeln" -> {
+                log("Statement → PrintStatement")
+                parsePrintStatement()
+            }
+            peek().getTokenType() == "Datatype" -> {
+                log("Statement → VariableDeclaration")
+                parseVarDecl()
+            }
+            else -> {
+                log("Statement → ExpressionStatement")
+                parseExpressionStatement()
+            }
         }
         indentLevel--
         return stmt
     }
+
+
 
     private fun parseVarDecl(): Statement {
         log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")

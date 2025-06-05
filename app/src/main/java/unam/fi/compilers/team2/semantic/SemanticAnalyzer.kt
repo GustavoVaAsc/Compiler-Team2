@@ -1,4 +1,4 @@
-package unam.fi.compilers.team2.semantic
+/*package unam.fi.compilers.team2.semantic
 
 import unam.fi.compilers.team2.parser.ASTNode
 import unam.fi.compilers.team2.parser.Assignment
@@ -72,3 +72,5 @@ class SemanticAnalyzer {
         }
     }
 }
+
+*/
