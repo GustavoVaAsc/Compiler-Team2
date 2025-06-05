@@ -1,7 +1,7 @@
 package unam.fi.compilers.team2.parser
 
 // Base class
-sealed class ASTNode
+sealed class ASTNode()
 
 // Program
 data class Program(val declarations: List<ASTNode>) : ASTNode() {

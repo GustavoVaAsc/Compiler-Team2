@@ -128,7 +128,112 @@ class SemanticAnalyzer {
     }
 
     private fun visitIf(node: IfStatement){
+        // Check if condition is boolean
+        visit(node.condition)
+        val conditionType = getType(node.condition)
+        if(conditionType != "bool"){
+            error("Condition must be bool, got $conditionType",node)
+        }
 
+        // Visit the body of then branch
+        node.thenBranch.forEach{visit(it)}
+
+        // If exists, visit else's body branch
+        node.elseBranch?.forEach{visit(it)}
+    }
+
+    private fun visitWhile(node: WhileStatement){
+        // Check if the condition is bool
+        visit(node.condition)
+        val conditionType = getType(node.condition)
+        if(conditionType != "bool"){
+            error("Condition must be bool, got $conditionType",node)
+        }
+
+        // Visit loop body
+        node.body.forEach{visit(it)}
+    }
+
+    private fun visitFor(node: ForStatement){
+        // Visit initializer if exists for([int i=0]; ...)
+        node.init?.let{ visit(it)}
+
+        // Check condition if exists for(...; [i<n]; ...)
+        node.condition?.let{
+            visit(it)
+            val conditionType = getType(it)
+            if(conditionType != "bool"){
+                error("Condition must be boolean, got $conditionType",node)
+            }
+        }
+
+        // Visit update if exists for(...; ...; i=i+1)
+        node.update?.let{ visit(it)}
+
+        // Visit loop body
+        node.body.forEach{ visit(it) }
+    }
+
+    private fun visitPrint(node:PrintStatement){
+        visit(node.value)
+    }
+
+    private fun visitBinary(node: BinaryExpression){
+        // Visit the two operands
+        visit(node.left)
+        visit(node.right)
+
+        val leftType = getType(node.left)
+        val rightType = getType(node.right)
+
+        if(leftType == "undefined"){
+            error("Undefined variable in left operand", node.left)
+        }
+        if(rightType == "undefined"){
+            error("Undefined variable in right operand", node.right)
+        }
+
+        // Check for type mismatches
+        if(!isCompatible(leftType,rightType,node)){
+            error("Type mismatch: $leftType ${node.op} $rightType", node)
+        }
+    }
+
+    private fun visitUnary(node:UnaryExpression){
+        // Visit operand
+        visit(node.expr)
+
+        // Get operand
+        val expressionType = getType(node.expr)
+
+        // Check if the variable is undefined
+        if(expressionType == "undefined"){
+            error("Undefined variable in expression", node.expr)
+        }
+
+        // Check operator compatibility
+        when(node.op){
+            "!" -> {
+                if (expressionType != "bool"){
+                    error("'!' operator requires boolean operand, got $expressionType", node)
+                }
+            }
+        }
+    }
+
+    private fun visitVariable(node: Variable){
+        // Check if variable is already defined
+        if(symbol_table.resolve(node.name) == null){
+            error("Undefined variable '${node.name}'",node)
+        }
+    }
+
+    private fun visitLiteral(node:Literal){
+
+    }
+
+    private fun visitGrouping(node: Grouping){
+        visit(node.expr)
     }
 
     private fun getType(expr: Expression): String {
@@ -200,7 +305,19 @@ class SemanticAnalyzer {
         }
     }
 
+    // TODO: Implement function classes and class members
+
     private fun isNumeric(type: String): Boolean = type == "int" || type == "float"
+
+    private fun isCompatible(type1: String, type2:String, node:BinaryExpression): Boolean{
+        // TODO: Add a message saying strings are not operable
+        return when{
+            type1 == type2 -> true
+            isNumeric(type1) && isNumeric(type2) -> true
+            //type1 == "string" && type2 == "string" && node.op =="+" ->true
+            else -> false
+        }
+    }
 
     private fun error(message: String, node: ASTNode){
         errors.add("[Line ${getNodeLine(node)}] Semantic error $message")
