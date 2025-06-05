@@ -3,9 +3,7 @@ package unam.fi.compilers.team2.parser
 import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
-/*
-
-Program         ::= { Declaration }
+/*Program         ::= { Declaration }
 
 Declaration     ::= ClassDecl | FunctionDecl | Statement
 
@@ -62,8 +60,7 @@ Primary         ::= Identifier
 
 Literal         ::= INTEGER | FLOAT | STRING
 
-BooleanLiteral  ::= "true" | "false"
-*/
+BooleanLiteral  ::= "true" | "false"*/
 
 class Parser(private val lexer: Lexer) {
     private val tokens: List<Token> = lexer.tokenize()
@@ -76,6 +73,7 @@ class Parser(private val lexer: Lexer) {
         derivation.appendLine(rule)
         derivation.appendLine()
     }
+
 
     fun parseProgram(): Program {
         log("Program → Declaration*")
@@ -414,8 +412,8 @@ class Parser(private val lexer: Lexer) {
         return RuntimeException("[Line ${token.getTokenLine()}] Error at '${token.getTokenValue()}': $message")
     }
 
+    // Nuevo método público para obtener la derivación
     fun getDerivationOutput(): String {
         return derivation.toString()
     }
 }
-
