@@ -1,51 +1,57 @@
 DERIVATION FOR PROGRAM 3
 
-<Source> ::= <Libs> <TopDeclarations>
-<Libs> ::= ε
+Program -> Declaration*
 
-<TopDeclarations> ::= <Function>
-<Function> ::= <Type> function <Id> ( ) <Block>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= void
-<Id> ::= main
-<Block> ::= { <Statement> <Statement> <Statement> }
+Declaration -> FunctionDeclaration
 
-<Statement> ::= <Variable> ;
-<Variable> ::= <Type> <Id> = <Expression>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= int
-<Id> ::= i
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer> ::= 1
+FunctionDeclaration -> 'function' Datatype Identifier '(' ')' '{' Statement* '}'
 
-<Statement> ::= <ControlFlow>
-<ControlFlow> ::= <WhileStatement>
-<WhileStatement> ::= while ( <Expression> ) <Block>
-<Expression> ::= <Expression> <BinaryOp> <Expression>
-<Expression> ::= <Id>
-<Id> ::= i
-<BinaryOp> ::= <=
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer> ::= 5
+Datatype -> void
 
-<Block> ::= { <Statement> <Statement> }
+Identifier -> main
 
-<Statement> ::= <FunctionCall> ;
-<FunctionCall> ::= <Id> ( <Arguments> )
-<Id> ::= println
-<Arguments> ::= <Expression>
-<Expression> ::= <Id>
-<Id> ::= i
+Statement -> VariableDeclaration
 
-<Statement> ::= <Assignment> ;
-<Assignment> ::= <Id> = <Expression>
-<Id> ::= i
-<Expression> ::= <Expression> <BinaryOp> <Expression>
-<Expression> ::= <Id>
-<Id> ::= i
-<BinaryOp> ::= +
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer> ::= 1
+VariableDeclaration -> Datatype Identifier ['=' Expression] ';'
+
+Datatype -> int
+
+Identifier -> i
+
+Expression -> Assignment
+
+Literal -> 1
+
+Statement -> WhileStatement
+
+WhileStatement -> 'while' '(' Expression ')' '{' Statement * '}'
+
+Expression -> Assignment
+
+Identifier -> i
+
+Operator -> <=
+
+Literal -> 5
+
+Statement -> PrintStatement
+
+PrintStatement -> 'writeln' '(' Expression ')' ';'
+
+Expression -> Assignment
+
+Identifier -> i
+
+Statement -> ExpressionStatement
+
+ExpressionStatement -> Expression ';'
+
+Expression -> Assignment 
+
+Identifier -> i
+
+Identifier -> i
+
+Operator -> +
+
+Literal -> 1
