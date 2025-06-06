@@ -1,58 +1,69 @@
 DERIVATION FOR PROGRAM 1
 
-<Source> ::= <Libs> <TopDeclarations>
-<Libs> ::= import <Id> ;
-<Id> ::= io
+Program -> Declaration*
 
-<TopDeclarations> ::= <Class> <TopDeclarations>
-<Class> ::= class <Id> <ClassBlock>
-<Id> ::= Perro
-<ClassBlock> ::= { <ClassMember> <ClassMember> }
+Declaration -> ClassDeclaration
 
-<ClassMember> ::= <Variable> ;
-<Variable> ::= <Type> <Id>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= string
-<Id> ::= nombre
+ClassDeclaration -> 'class' Identifier '{' Declaration* '}'
 
-<ClassMember> ::= <Function>
-<Function> ::= <Type> function <Id> ( ) <Block>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= void
-<Id> ::= ladrar
-<Block> ::= { <Statement> }
-<Statement> ::= <FunctionCall> ;
-<FunctionCall> ::= <Id> ( <Arguments> )
-<Id> ::= println
-<Arguments> ::= <Expression>
-<Expression> ::= <Literal>
-<Literal> ::= <String>
-<String> ::= "Woof woof"
+Identifier -> Perro
 
-<TopDeclarations> ::= <Function>
-<Function> ::= <Type> function <Id> ( ) <Block>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= void
-<Id> ::= main
-<Block> ::= { <Statement> <Statement> }
+Declaration -> Statement
 
-<Statement> ::= <Variable> ;
-<Variable> ::= <Type> <Id> = <Expression>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= int8
-<Id> ::= x
-<Expression> ::= <Expression> <BinaryOp> <Expression>
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer>> ::= 5
-<BinaryOp> ::= +
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer> ::= 2
+Statement -> VariableDeclaration
 
-<Statement> ::= <FunctionCall> ;
-<FunctionCall> ::= <Id> ( <Arguments> )
-<Id> ::= println
-<Arguments> ::= <Expression>
-<Expression> ::= <Id>
-<Id> ::= x
+VariableDeclaration -> Datatype Identifier ['=' Expression] ';'
+
+Datatype -> string
+
+Identier -> nombre
+
+Declaration -> FunctionDeclaration
+
+FunctionDeclaration -> 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype -> void
+
+Identifier -> ladrar
+
+Statement -> PrintStatement
+
+PrintStatement -> 'writeln' '(' Expression ')' ';'
+
+Expression -> Assigment
+
+Literal -> "Woof woof"
+
+Declaration -> FunctionDeclaration
+
+FunctionDeclaration -> 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype -> void
+
+Identifier -> main
+
+Statement -> VariableDeclaration
+
+VariableDeclaration -> Datatype Identifier ['=' Expression] ';'
+
+Datatype -> int
+
+Identifier -> x
+
+Expression -> Assigment
+
+Literal -> 5
+
+Operator -> +
+
+Literal -> 2
+
+Statement -> PrintStatement
+
+PrintStatement -> 'writeln' '(' Expression ')' ';'
+
+Expression -> Assigment
+
+Identifier -> x
+
+
