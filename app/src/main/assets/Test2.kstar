@@ -1,11 +1,11 @@
-import math
+// Check if 10 is even
 
-function void main() {
-    int x = 10;
+function void main () {
+	int x = 10;
 
-    if ((x % 2) == 0) {
-        writeln("The number is even");
-    } else {
-        writeln("The number is odd");
-    }
+	if ((x % 2) == 0) {
+		writeln("The number is even");
+	} else {
+		writeln("The number is odd");
+	}
 }
