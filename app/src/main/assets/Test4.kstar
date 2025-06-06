@@ -1,13 +1,11 @@
-function void main() {
-    float temperature = 99.5;
+// Cold or Hot
 
-    if (temperature >= 100.0) {
-        writeln("boiling point or above");
-    } else if (temperature >= 37.0) {
-        writeln("warm liquid");
-    } else if (temperature >= 0.0) {
-        writeln("cold liquid");
-    } else {
-        writeln("frozen or below");
-    }
+function void main() {
+	float temperature = 60.5;
+
+	if (temperature >= 100.0) {
+		writeln("Hot :(");
+	} else {
+		writeln("Cold :p");
+	}
 }
