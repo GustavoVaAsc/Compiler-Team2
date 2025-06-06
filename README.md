@@ -63,79 +63,88 @@ One of the core components of a compiler is the parser, which validates and inte
 
 For instance, given the following source code in our custom language:
 ```
-import io;
-
-class Perro {
-    string nombre;
-
-    void function ladrar() {
-        println("Woof woof");
-    }
+// Bark function
+class Perro{
+	string nombre;
+	function void ladrar (){
+		writeln("Woof woof");
+	}
 }
 
-void function main() {
-    int8 x = 5 + 2;
-    println(x);
+// Function that adds two numbers
+function void main (){
+	int x = 5 + 2;
+	writeln(x);
 }
 ```
 Our compiler parses it and generates a leftmost derivation using the grammar defined in our parser module:
 ```
-<Source> ::= <Libs> <TopDeclarations>Add commentMore actions
-<Libs> ::= import <Id> ;
-<Id> ::= io
+Program -> Declaration*
 
-<TopDeclarations> ::= <Class> <TopDeclarations>
-<Class> ::= class <Id> <ClassBlock>
-<Id> ::= Perro
-<ClassBlock> ::= { <ClassMember> <ClassMember> }
+Declaration -> ClassDeclaration
 
-<ClassMember> ::= <Variable> ;
-<Variable> ::= <Type> <Id>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= string
-<Id> ::= nombre
+ClassDeclaration -> 'class' Identifier '{' Declaration* '}'
 
-<ClassMember> ::= <Function>
-<Function> ::= <Type> function <Id> ( ) <Block>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= void
-<Id> ::= ladrar
-<Block> ::= { <Statement> }
-<Statement> ::= <FunctionCall> ;
-<FunctionCall> ::= <Id> ( <Arguments> )
-<Id> ::= println
-<Arguments> ::= <Expression>
-<Expression> ::= <Literal>
-<Literal> ::= <String>
-<String> ::= "Woof woof"
+Identifier -> Perro
 
-<TopDeclarations> ::= <Function>
-<Function> ::= <Type> function <Id> ( ) <Block>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= void
-<Id> ::= main
-<Block> ::= { <Statement> <Statement> }
+Declaration -> Statement
 
-<Statement> ::= <Variable> ;
-<Variable> ::= <Type> <Id> = <Expression>
-<Type> ::= <PrimitiveType>
-<PrimitiveType> ::= int8
-<Id> ::= x
-<Expression> ::= <Expression> <BinaryOp> <Expression>
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer>> ::= 5
-<BinaryOp> ::= +
-<Expression> ::= <Literal>
-<Literal> ::= <Integer>
-<Integer> ::= 2
+Statement -> VariableDeclaration
 
-<Statement> ::= <FunctionCall> ;
-<FunctionCall> ::= <Id> ( <Arguments> )
-<Id> ::= println
-<Arguments> ::= <Expression>
-<Expression> ::= <Id>
-<Id> ::= x
+VariableDeclaration -> Datatype Identifier ['=' Expression] ';'
+
+Datatype -> string
+
+Identier -> nombre
+
+Declaration -> FunctionDeclaration
+
+FunctionDeclaration -> 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype -> void
+
+Identifier -> ladrar
+
+Statement -> PrintStatement
+
+PrintStatement -> 'writeln' '(' Expression ')' ';'
+
+Expression -> Assigment
+
+Literal -> "Woof woof"
+
+Declaration -> FunctionDeclaration
+
+FunctionDeclaration -> 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype -> void
+
+Identifier -> main
+
+Statement -> VariableDeclaration
+
+VariableDeclaration -> Datatype Identifier ['=' Expression] ';'
+
+Datatype -> int
+
+Identifier -> x
+
+Expression -> Assigment
+
+Literal -> 5
+
+Operator -> +
+
+Literal -> 2
+
+Statement -> PrintStatement
+
+PrintStatement -> 'writeln' '(' Expression ')' ';'
+
+Expression -> Assigment
+
+Identifier -> x
+
 ```
 ## Results 
 ### Application start
@@ -165,3 +174,6 @@ Our compiler parses it and generates a leftmost derivation using the grammar def
 [6] “Extended Backus–Naur form”. WIKIPEDIA.[Online]. Available: [https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form]
 
 [7] “The Go Programming Language Specification - Language version go1.24”. GO, Dec. 30, 2024.[Online]. Available: [https://go.dev/ref/spec]
+
+[8] Neso Academy.“LL(1) Parsing - Solved Problems (Set 1)”. Mar. 30, 2023.[Online Video]. Available: [https://www.youtube.com/watch?v=5P7ehgZ6EIs]
+
