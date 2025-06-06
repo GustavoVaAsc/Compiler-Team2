@@ -264,10 +264,10 @@ class MainActivity : AppCompatActivity() {
                 val derivationText = parser.derivation.toString()
 
                 val success = "✅ Parsing completed successfully!\n\n"
-                val ASTsuccess = success + "Generated Abstract Syntax Tree:\n" + program.toString() + "\n\n"
-                val derivationHeader = "Derivation steps:\n"
+                val derivationHeader = "Derivation steps:\n\n"
 
-                val parserOutput = ASTsuccess + derivationHeader + derivationText
+                val parserOutput = success + derivationHeader + derivationText
+
 
                 val fullOutput = StringBuilder(parserOutput).append(semanticOutput)
 

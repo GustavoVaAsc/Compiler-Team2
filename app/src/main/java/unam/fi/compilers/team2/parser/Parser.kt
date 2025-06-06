@@ -16,6 +16,11 @@ class Parser(private val lexer: Lexer) {
         derivation.appendLine()
     }
 
+    private fun logToken(name: String, value: String) {
+        derivation.appendLine("$name → $value")
+        derivation.appendLine()
+    }
+
 
     fun parseProgram(): Program {
         log("Program → Declaration*")
@@ -51,6 +56,8 @@ class Parser(private val lexer: Lexer) {
         indentLevel++
         val classToken = consume("class", "Expect 'class'.")
         val name = consumeType("Identifier", "Expect class name.")
+        logToken("Identifier", name.getTokenValue())
+
         consume("{", "Expect '{' before class body.")
         val members = mutableListOf<ASTNode>()
         while (!check("}")) {
@@ -65,8 +72,15 @@ class Parser(private val lexer: Lexer) {
         log("FunctionDeclaration → 'function' Datatype Identifier '(' ')' '{' Statement* '}'")
         indentLevel++
         consume("function", "Expect 'function'.")
-        val returnType = consumeType("Datatype", "Expect return type.").getTokenValue()
-        val name = consumeType("Identifier", "Expect function name.").getTokenValue()
+
+        val returnTypeToken = consumeType("Datatype", "Expect return type.")
+        logToken("Datatype", returnTypeToken.getTokenValue())
+        val returnType = returnTypeToken.getTokenValue()
+
+        val nameToken = consumeType("Identifier", "Expect function name.")
+        logToken("Identifier", nameToken.getTokenValue())
+        val name = nameToken.getTokenValue()
+
         consume("(", "Expect '('.")
         consume(")", "Expect ')'.")
         consume("{", "Expect '{' before function body.")
@@ -121,12 +135,17 @@ class Parser(private val lexer: Lexer) {
         log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")
         indentLevel++
         val typeToken = advance()
-        val name = consumeType("Identifier", "Expect variable name.").getTokenValue()
+        logToken("Datatype", typeToken.getTokenValue())
+
+        val name = consumeType("Identifier", "Expect variable name.")
+        logToken("Identifier", name.getTokenValue())
+
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
         indentLevel--
-        return VariableDeclaration(typeToken.getTokenValue(), name, initializer, typeToken)
+        return VariableDeclaration(typeToken.getTokenValue(), name.getTokenValue(), initializer, typeToken)
     }
+
 
     private fun parseIfStatement(): IfStatement {
         log("IfStatement → 'if' '(' Expression ')' '{' Statement* '}' ['else' '{' Statement* '}']")
@@ -264,6 +283,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseLogicalAnd()
         while (match("||")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseLogicalAnd()
             expr = BinaryExpression(expr, op, right)
         }
@@ -274,6 +294,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseEquality()
         while (match("&&")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseEquality()
             expr = BinaryExpression(expr, op, right)
         }
@@ -284,6 +305,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseComparison()
         while (match("==", "!=")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseComparison()
             expr = BinaryExpression(expr, op, right)
         }
@@ -294,6 +316,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseTerm()
         while (match(">", ">=", "<", "<=")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseTerm()
             expr = BinaryExpression(expr, op, right)
         }
@@ -304,6 +327,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseFactor()
         while (match("+", "-")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseFactor()
             expr = BinaryExpression(expr, op, right)
         }
@@ -314,6 +338,7 @@ class Parser(private val lexer: Lexer) {
         var expr = parseUnary()
         while (match("*", "/", "%")) {
             val op = previous().getTokenValue()
+            logToken("Operator", op)
             val right = parseUnary()
             expr = BinaryExpression(expr, op, right)
         }
@@ -331,11 +356,31 @@ class Parser(private val lexer: Lexer) {
 
     private fun parsePrimary(): Expression {
         return when {
-            matchType("INTEGER") -> Literal(previous().getTokenValue().toInt())
-            matchType("FLOAT") -> Literal(previous().getTokenValue().toDouble())
-            matchType("STRING") -> Literal(previous().getTokenValue())
-            matchType("Boolean") -> Literal(previous().getTokenValue() == "true")
-            matchType("Identifier") -> Variable(previous().getTokenValue())
+            matchType("INTEGER") -> {
+                val token = previous()
+                logToken("Literal", token.getTokenValue())
+                Literal(token.getTokenValue().toInt())
+            }
+            matchType("FLOAT") -> {
+                val token = previous()
+                logToken("Literal", token.getTokenValue())
+                Literal(token.getTokenValue().toDouble())
+            }
+            matchType("STRING") -> {
+                val token = previous()
+                logToken("Literal", token.getTokenValue())
+                Literal(token.getTokenValue())
+            }
+            matchType("Boolean") -> {
+                val token = previous()
+                logToken("Literal", token.getTokenValue())
+                Literal(token.getTokenValue() == "true")
+            }
+            matchType("Identifier") -> {
+                val token = previous()
+                logToken("Identifier", token.getTokenValue())
+                Variable(token.getTokenValue())
+            }
             match("(") -> {
                 val expr = parseExpression()
                 consume(")", "Expect ')' after expression.")
@@ -344,6 +389,7 @@ class Parser(private val lexer: Lexer) {
             else -> throw error(peek(), "Expected expression.")
         }
     }
+
 
     private fun match(vararg values: String): Boolean {
         for (value in values) {
