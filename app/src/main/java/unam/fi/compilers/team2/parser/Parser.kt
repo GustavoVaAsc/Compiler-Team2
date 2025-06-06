@@ -117,7 +117,7 @@ class Parser(private val lexer: Lexer) {
 
 
 
-    private fun parseVarDecl(): Statement {
+    private fun parseVarDecl(): VariableDeclaration {
         log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")
         indentLevel++
         val typeToken = advance()
@@ -125,7 +125,7 @@ class Parser(private val lexer: Lexer) {
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
         indentLevel--
-        return VariableDeclaration(typeToken.getTokenType(), name, initializer,typeToken)
+        return VariableDeclaration(typeToken.getTokenValue(), name, initializer, typeToken)
     }
 
     private fun parseIfStatement(): IfStatement {

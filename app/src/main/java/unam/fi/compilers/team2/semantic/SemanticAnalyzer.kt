@@ -24,6 +24,7 @@ class SemanticAnalyzer {
     private val symbol_table = SymbolTable()
     private val errors = mutableListOf<String>()
     private var current_function:FunctionDeclaration? = null
+    private val pendingDefinitions = mutableListOf<Symbol>()
 
     public fun analyze(program:Program):List<String>{
         visit(program)
@@ -78,26 +79,40 @@ class SemanticAnalyzer {
         symbol_table.enterScope(functionScope)
         current_function = node
 
-        node.body.forEach{visit(it)}
+        node.body.forEach{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
 
         symbol_table.exitScope()
         current_function = null
     }
 
-    private fun visitVarDecl(node: VariableDeclaration){
-        // Variable definition in scope
-        if(!symbol_table.define(Symbol(node.name, node.type, SymbolKind.VARIABLE, symbol_table.currentScope(),-1))){
-            error("Variable '${node.name}' already defined", node)
-        }
-
-        // Initialization type
+    private fun visitVarDecl(node: VariableDeclaration) {
         node.value?.let{
             visit(it)
             val exprType = getType(it)
-            if(exprType != node.type && exprType != "null"){
+            // Check type compatibility
+            if (exprType != node.type && exprType != "null") {
                 error("Type mismatch: ${node.type} vs $exprType", node)
             }
         }
+
+        if (!symbol_table.define(
+                Symbol(
+                    node.name,
+                    node.type,
+                    SymbolKind.VARIABLE,
+                    symbol_table.currentScope(),
+                    -1
+                )
+            )){
+            error("Variable '${node.name}' already defined", node)
+        }
+
+        pendingDefinitions.add(
+            Symbol(node.name, node.type, SymbolKind.VARIABLE,symbol_table.currentScope(),-1)
+        )
     }
 
     private fun visitAssignment(node:Assignment){
@@ -136,10 +151,16 @@ class SemanticAnalyzer {
         }
 
         // Visit the body of then branch
-        node.thenBranch.forEach{visit(it)}
+        node.thenBranch.forEach{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
 
         // If exists, visit else's body branch
-        node.elseBranch?.forEach{visit(it)}
+        node.elseBranch?.forEach{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
     }
 
     private fun visitWhile(node: WhileStatement){
@@ -151,12 +172,18 @@ class SemanticAnalyzer {
         }
 
         // Visit loop body
-        node.body.forEach{visit(it)}
+        node.body.forEach{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
     }
 
     private fun visitFor(node: ForStatement){
         // Visit initializer if exists for([int i=0]; ...)
-        node.init?.let{ visit(it)}
+        node.init?.let{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
 
         // Check condition if exists for(...; [i<n]; ...)
         node.condition?.let{
@@ -168,10 +195,16 @@ class SemanticAnalyzer {
         }
 
         // Visit update if exists for(...; ...; i=i+1)
-        node.update?.let{ visit(it)}
+        node.update?.let{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
 
         // Visit loop body
-        node.body.forEach{ visit(it) }
+        node.body.forEach{
+            visit(it)
+            symbol_table.flushPendingDefinitions()
+        }
     }
 
     private fun visitPrint(node:PrintStatement){
@@ -231,6 +264,7 @@ class SemanticAnalyzer {
     private fun visitLiteral(node:Literal){
 
     }
+
 
     private fun visitGrouping(node: Grouping){
         visit(node.expr)
@@ -318,6 +352,7 @@ class SemanticAnalyzer {
             else -> false
         }
     }
+
 
     private fun error(message: String, node: ASTNode){
         errors.add("[Line ${getNodeLine(node)}] Semantic error $message")
