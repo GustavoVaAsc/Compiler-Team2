@@ -24,7 +24,7 @@ Literal -> 1
 
 Statement -> WhileStatement
 
-WhileStatement -> 'while' '(' Expression ')' '{' Statement * '}'
+WhileStatement -> 'while' '(' Expression ')' '{' Statement* '}'
 
 Expression -> Assignment
 
