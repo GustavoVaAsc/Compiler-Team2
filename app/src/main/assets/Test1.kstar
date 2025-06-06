@@ -1,14 +1,13 @@
-import io;
-
+// Bark function
 class Perro{
-    string nombre;
-
-    function void ladrar(){
-          writeln("Woof woof");
-     }
+	string nombre;
+	function void ladrar (){
+		writeln("Woof woof");
+	}
 }
 
-function void main(){
-     int x = 5+2;
-     writeln(x);
+// Function that adds two numbers
+function void main (){
+	int x = 5 + 2;
+	writeln(x);
 }
