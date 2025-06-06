@@ -148,14 +148,14 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
             classifyAndCount(idRegex, noDatatypeLexeme, "Identifier", i)
             */
             classifyAndCollect(litRegex, "STRING")
+            classifyAndCollect(floatRegex, "FLOAT")
+            classifyAndCollect(intRegex, "INTEGER")
+            classifyAndCollect(boolRegex, "Boolean")
             classifyAndCollect(keywordRegex, "Keyword")
             classifyAndCollect(datatypeRegex, "Datatype")
-            classifyAndCollect(boolRegex, "Boolean")
             classifyAndCollect(relRegex, "Relation")
             classifyAndCollect(opRegex, "Operator")
             classifyAndCollect(puntRegex, "Punctuation")
-            classifyAndCollect(floatRegex, "FLOAT")
-            classifyAndCollect(intRegex, "INTEGER")
             classifyAndCollect(idRegex, "Identifier")
 
             // Sort tokens by position in line
