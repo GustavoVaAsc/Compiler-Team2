@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
             val lexer = unam.fi.compilers.team2.lexer.Lexer(lexemes,this)
             val tokens = lexer.tokenize()
 
-            val tokenOutput = tokens.joinToString("\n") {
+            val tokenOutput = tokens.joinToString("\n\n") {
                 it.toString()
             }
 
