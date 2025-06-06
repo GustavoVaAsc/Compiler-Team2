@@ -30,7 +30,7 @@ Statement -> PrintStatement
 
 PrintStatement -> 'writeln' '(' Expression ')' ';'
 
-Expression -> Assigment
+Expression -> Assignment
 
 Literal -> "Woof woof"
 
@@ -50,7 +50,7 @@ Datatype -> int
 
 Identifier -> x
 
-Expression -> Assigment
+Expression -> Assignment
 
 Literal -> 5
 
@@ -62,7 +62,7 @@ Statement -> PrintStatement
 
 PrintStatement -> 'writeln' '(' Expression ')' ';'
 
-Expression -> Assigment
+Expression -> Assignment
 
 Identifier -> x
 
