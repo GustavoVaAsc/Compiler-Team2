@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".TokenStreamActivity"/>
         <activity android:name=".parser.ParserOutputActivity"/>
+        <activity android:name=".compilerexecuter.CompileActivity"/>
     </application>
 
 </manifest>
