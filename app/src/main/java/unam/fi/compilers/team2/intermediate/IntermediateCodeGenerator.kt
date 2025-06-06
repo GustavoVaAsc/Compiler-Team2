@@ -39,7 +39,7 @@ class IntermediateCodeGenerator {
             is FunctionDeclaration -> visitFunction(node)
             is ClassDeclaration -> visitClass(node)
             is VariableDeclaration -> visitVarDecl(node)
-            is ExpressionStatement -> visit(node)
+            is ExpressionStatement -> visitExpression(node.expr)
             is ReturnStatement -> visitReturn(node)
             is PrintStatement -> visitPrint(node)
             is IfStatement -> visitIf(node)
@@ -105,14 +105,19 @@ class IntermediateCodeGenerator {
 
         // Generate condition
         val condTemp = visitExpression(node.condition)
-        instructions.add(IfGoto(condTemp, endLabel))
+
+        // If condition is false, exit
+        val negated = negateCondition(condTemp)
+        instructions.add(IfGoto(negated, endLabel))
 
         // Loop body
-        node.body.forEach{visit(it)}
-        instructions.add(Goto(loopLabel))
+        node.body.forEach{ visit(it) }
 
+        // Repeat
+        instructions.add(Goto(loopLabel))
         instructions.add(Label(endLabel))
     }
+
 
     private fun visitFor(node:ForStatement){
         // Initializer
@@ -126,18 +131,20 @@ class IntermediateCodeGenerator {
         // Condition
         node.condition?.let{
             val conditionTemp = visitExpression(it)
-            instructions.add(IfGoto(conditionTemp,endLabel))
+            val negated = negateCondition(conditionTemp)
+            instructions.add(IfGoto(negated, endLabel))
         }
 
         // Loop body
-        node.body.forEach{ visit(it) }
+        node.body.forEach { visit(it) }
 
         // Update
-        node.update?.let {visitExpression(it)}
+        node.update?.let { visitExpression(it) }
 
         instructions.add(Goto(loopLabel))
         instructions.add(Label(endLabel))
     }
+
 
     private fun visitAssignment(node:Assignment):String{
         val value = visitExpression(node.value)
@@ -197,4 +204,13 @@ class IntermediateCodeGenerator {
             }
         }
     }
+
+    private fun negateCondition(cond: String): String {
+        val zero = newTemp()
+        instructions.add(Assign(zero, "0"))
+        val result = newTemp()
+        instructions.add(BinaryOp(result, cond, "==", zero))
+        return result
+    }
+
 }
