@@ -17,22 +17,22 @@ class BytecodeGenerator {
         ir.forEach { instr ->
             when (instr) {
                 is Label -> bytecode.add(Bytecode.LABEL(instr.name))
-                is Assign -> bytecode.add(Bytecode.STORE(instr.value, instr.target))
+                is Assign -> bytecode.add(Bytecode.STORE(instr.target,instr.value))
                 is BinaryOp -> {
-                    val opcode = when (instr.op) {
-                        "+" -> Bytecode.ADD::class
-                        "-" -> Bytecode.SUB::class
-                        "*" -> Bytecode.MUL::class
-                        "/" -> Bytecode.DIV::class
-                        "==" -> Bytecode.EQ::class
-                        "!=" -> Bytecode.NEQ::class
+                    val opInstr = when (instr.op) {
+                        "+"  -> Bytecode.ADD(instr.result, instr.left, instr.right)
+                        "-"  -> Bytecode.SUB(instr.result, instr.left, instr.right)
+                        "*"  -> Bytecode.MUL(instr.result, instr.left, instr.right)
+                        "/"  -> Bytecode.DIV(instr.result, instr.left, instr.right)
+                        "==" -> Bytecode.EQ(instr.result, instr.left, instr.right)
+                        "!=" -> Bytecode.NEQ(instr.result, instr.left, instr.right)
+                        "<"  -> Bytecode.LW(instr.result, instr.left, instr.right)
+                        ">"  -> Bytecode.GT(instr.result, instr.left, instr.right)
+                        "<=" -> Bytecode.LEQ(instr.result, instr.left, instr.right)
+                        ">=" -> Bytecode.GEQ(instr.result, instr.left, instr.right)
                         else -> error("Unsupported operator: ${instr.op}")
                     }
-                    bytecode.add(
-                        opcode.constructors.first().call(
-                            instr.result, instr.left, instr.right
-                        ) as Bytecode
-                    )
+                    bytecode.add(opInstr)
                 }
                 is IfGoto -> bytecode.add(Bytecode.JZ(instr.condition, instr.label))
                 is Goto -> bytecode.add(Bytecode.JMP(instr.label))

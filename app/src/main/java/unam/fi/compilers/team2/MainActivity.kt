@@ -321,20 +321,23 @@ class MainActivity : AppCompatActivity() {
                     val bytecodeGen = BytecodeGenerator()
                     val bytecode = bytecodeGen.generate(intermediateCode)
 
+                    /*
+                    for(instruction in bytecode){
+                        output.append(instruction.toString()).append("\n")
+                    }
+                    */
                     val vm = StackVM()
                     val vmOutput = vm.execute(bytecode)
 
                     output.append("\n\n").append("Program execution! \uD83D\uDC7E").append("\n\n")
                     output.append(vmOutput)
-
+                    println(output)
                     val intent: Intent = Intent(this, CompileActivity::class.java)
                     intent.putExtra("Compiler Output", output.toString())
                     startActivity(intent)
                 }
-
-
             }catch(e:Exception){
-                val parserOutput = "❌ Parsing failed: ${e.message}"
+                val parserOutput = "❌ Compilation error: ${e.message}"
                 val intent: Intent = Intent(this, CompileActivity::class.java)
                 intent.putExtra("Compiler Output", parserOutput)
                 startActivity(intent)

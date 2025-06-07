@@ -30,6 +30,9 @@ class IntermediateCodeGenerator {
 
     public fun generate(node:ASTNode):List<IRInstruction>{
         visit(node)
+        for(ins in instructions){
+            println(ins.toString())
+        }
         return instructions
     }
 
@@ -86,16 +89,26 @@ class IntermediateCodeGenerator {
         instructions.add(IRPrint(value))
     }
 
-    private fun visitIf(node: IfStatement){
+    private fun visitIf(node: IfStatement) {
         val elseLabel = newLabel()
         val endLabel = newLabel()
 
-        // Generate the condition
-        val conditionTemp = visitExpression(node.condition)
-        instructions.add(IfGoto(conditionTemp,elseLabel))
+        // Generate condition
+        val condTemp = visitExpression(node.condition)
+        val negatedCondition = negateCondition(condTemp)
+        instructions.add(IfGoto(negatedCondition, elseLabel))
 
         // Then branch
+        node.thenBranch.forEach { visit(it) }
+        instructions.add(Goto(endLabel))
+
+        // Else branch (only if exists)
+        instructions.add(Label(elseLabel))
+        node.elseBranch?.forEach { visit(it) }
+
+        instructions.add(Label(endLabel))
     }
+
 
     private fun visitWhile(node: WhileStatement){
         val loopLabel = newLabel()
@@ -206,11 +219,11 @@ class IntermediateCodeGenerator {
     }
 
     private fun negateCondition(cond: String): String {
-        val zero = newTemp()
-        instructions.add(Assign(zero, "0"))
         val result = newTemp()
-        instructions.add(BinaryOp(result, cond, "==", zero))
+        // Assuming BinaryOp can handle a literal directly
+        instructions.add(BinaryOp(result, cond, "==", "0")) // Compare cond directly with "0"
         return result
     }
 
 }
+

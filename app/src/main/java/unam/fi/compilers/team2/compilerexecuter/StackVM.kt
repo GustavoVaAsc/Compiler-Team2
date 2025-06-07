@@ -1,21 +1,35 @@
 package unam.fi.compilers.team2.compilerexecuter
 
 class StackVM {
-    private val registers = mutableMapOf<String,Any>()
-    private val call_stack = ArrayDeque<MutableMap<String,Any>>()
+    private val registers = mutableMapOf<String, Any>()
+    private val callStack = ArrayDeque<CallFrame>()
     private var pc = 0
     private var current_bytecode = listOf<Bytecode>()
-    private val labels = mutableMapOf<String,Int>()
-    private val program_output = StringBuilder("")
+    private val labels = mutableMapOf<String, Int>()
+    private val program_output = StringBuilder()
 
-    public fun execute(bytecode: List<Bytecode>):String{
+    private data class CallFrame(
+        val savedRegisters: Map<String, Any> = emptyMap(),
+        val returnAddress: Int = -1,
+        val localVars: MutableMap<String, Any> = mutableMapOf()
+    )
+
+    public fun execute(bytecode: List<Bytecode>): String {
         current_bytecode = bytecode
         buildLabelIndex()
-        call_stack.addLast(mutableMapOf())
-        pc = 0
 
-        while (pc < bytecode.size){
-            when (val instr = bytecode[pc++]){
+        val debug = StringBuilder()
+        for(code in bytecode){
+            debug.append(code).append("\n")
+        }
+        println(debug)
+
+        // Initialize with main function frame
+        callStack.addLast(CallFrame())
+        pc = labels["func_main_start"] ?: throw Exception("main function not found")
+
+        while (pc in 0 until bytecode.size) {
+            when (val instr = bytecode[pc++]) {
                 is Bytecode.LOAD -> load(instr)
                 is Bytecode.STORE -> store(instr)
                 is Bytecode.ADD -> arithmetic(instr, ::handleAdd)
@@ -24,10 +38,14 @@ class StackVM {
                 is Bytecode.DIV -> arithmetic(instr, ::handleDiv)
                 is Bytecode.EQ -> compare(instr, ::handleEq)
                 is Bytecode.NEQ -> compare(instr, ::handleNeq)
+                is Bytecode.GEQ -> compare(instr, ::handleGeq)
+                is Bytecode.GT -> compare(instr,::handleGt)
+                is Bytecode.LEQ -> compare(instr, ::handleLeq)
+                is Bytecode.LW -> compare(instr, ::handleLw)
                 is Bytecode.JMP -> jump(instr.label)
-                is Bytecode.JZ -> if(getValue(instr.src) == 0) jump(instr.label)
+                is Bytecode.JZ -> if (getValueAsBoolean(instr.src)) jump(instr.label)
                 is Bytecode.LABEL -> {}
-                is Bytecode.PRINT -> program_output.append(getValue(instr.src)).append("\n")
+                is Bytecode.PRINT -> program_output.append(getValueAsString(instr.src)).append("\n")
                 is Bytecode.CALL -> callFunction(instr.func)
                 is Bytecode.RET -> returnFunction(instr.value)
                 is Bytecode.TONUM -> convertToNumber(instr)
@@ -37,12 +55,13 @@ class StackVM {
         return program_output.toString()
     }
 
-    private fun load(instr:Bytecode.LOAD){
+    private fun load(instr: Bytecode.LOAD) {
         registers[instr.dest] = getValue(instr.src)
     }
 
-    private fun store(instr: Bytecode.STORE){
-        call_stack.first()[instr.dest] = getValue(instr.src)
+    private fun store(instr: Bytecode.STORE) {
+        val currentFrame = callStack.last()
+        currentFrame.localVars[instr.dest] = getValue(instr.src)
     }
 
     private fun arithmetic(
@@ -61,7 +80,6 @@ class StackVM {
         registers[dest] = opHandler(leftVal, rightVal)
     }
 
-
     private fun compare(
         instr: Bytecode,
         cmpHandler: (Any, Any) -> Boolean
@@ -69,6 +87,10 @@ class StackVM {
         val (dest, left, right) = when (instr) {
             is Bytecode.EQ -> Triple(instr.dest, instr.left, instr.right)
             is Bytecode.NEQ -> Triple(instr.dest, instr.left, instr.right)
+            is Bytecode.GT -> Triple(instr.dest, instr.left, instr.right)
+            is Bytecode.GEQ -> Triple(instr.dest, instr.left, instr.right)
+            is Bytecode.LW -> Triple(instr.dest, instr.left, instr.right)
+            is Bytecode.LEQ -> Triple(instr.dest, instr.left, instr.right)
             else -> error("Invalid comparison instruction")
         }
         val leftVal = getValue(left)
@@ -134,33 +156,87 @@ class StackVM {
         return !handleEq(left, right)
     }
 
-    private fun jump(label: String){
-        pc = labels[label]?: error("Undefined label: $label")
+    private fun handleGeq(left: Any, right: Any): Boolean{
+        return when{
+            left is Number && right is Number -> left.toDouble() >= right.toDouble()
+            left is String && right is String -> left >= right
+            else -> error("Unsupported types for comparation")
+        }
     }
 
-    private fun callFunction(func:String){
-        call_stack.addLast(registers.toMutableMap())
+    private fun handleGt(left: Any, right: Any): Boolean{
+        return when{
+            left is Number && right is Number -> left.toDouble() > right.toDouble()
+            left is String && right is String -> left > right
+            else -> error("Unsupported types for comparation")
+        }
+    }
+
+    private fun handleLw(left: Any, right: Any): Boolean{
+        return when{
+            left is Number && right is Number -> left.toDouble() < right.toDouble()
+            left is String && right is String -> left < right
+            else -> error("Unsupported types for comparation")
+        }
+    }
+
+    private fun handleLeq(left: Any, right: Any): Boolean{
+        return when{
+            left is Number && right is Number -> left.toDouble() <= right.toDouble()
+            left is String && right is String -> left <= right
+            else -> error("Unsupported types for comparation")
+        }
+    }
+
+    private fun jump(label: String) {
+        pc = labels[label] ?: error("Undefined label: $label")
+    }
+
+    private fun callFunction(func: String) {
+        // Save current state
+        callStack.addLast(CallFrame(
+            savedRegisters = registers.toMap(),
+            returnAddress = pc
+        ))
+
+        // Clear registers for new function
         registers.clear()
+
+        // Jump to function start
         jump("func_${func}_start")
     }
 
-    private fun returnFunction(value: String?){
-        val result = value?.let {getValue(it)}
-        call_stack.removeLast().let{registers.putAll(it)}
-        value?.let {registers["ret"] = result!!}
-        jump("call_return")
+    private fun returnFunction(value: String?) {
+        if (callStack.size <= 1) {
+            // Main function return - end execution
+            pc = -1
+            return
+        }
+
+        // Restore previous state
+        val frame = callStack.removeLast()
+        registers.clear()
+        registers.putAll(frame.savedRegisters)
+
+        // Set return value if exists
+        value?.let { registers["ret"] = getValue(it) }
+
+        // Continue from saved return address
+        pc = frame.returnAddress
     }
 
     private fun getValue(src: String): Any {
         return when {
             src.startsWith("t") -> registers[src] ?: error("Undefined register $src")
-            src.startsWith("\"") -> src.substring(1, src.length - 1)  // Remove quotes
+            src.startsWith("\"") -> src.substring(1, src.length - 1)
+            src == "true" -> true
+            src == "false" -> false
             src.toIntOrNull() != null -> src.toInt()
             src.toDoubleOrNull() != null -> src.toDouble()
             else -> {
-                // Search call stack from top to bottom
-                for (i in call_stack.size - 1 downTo 0) {
-                    call_stack[i][src]?.let { return it }
+                // Look in local variables of all frames (current first)
+                for (i in callStack.indices.reversed()) {
+                    callStack[i].localVars[src]?.let { return it }
                 }
                 error("Undefined variable: $src")
             }
@@ -170,25 +246,24 @@ class StackVM {
     private fun getValueAsBoolean(src: String): Boolean {
         val value = getValue(src)
         return when (value) {
+            is Boolean -> value
             is Number -> value.toDouble() != 0.0
             is String -> value.isNotEmpty()
             else -> false
         }
     }
 
-    private fun printValue(value: Any) {
-        println(
-            when (value) {
-                is Double -> "%.2f".format(value)
-                else -> value.toString()
-            }
-        )
-    }
-
-    private fun buildLabelIndex(){
-        current_bytecode.forEachIndexed{index, instr ->
-            if(instr is Bytecode.LABEL) labels[instr.name] = index
+    private fun getValueAsString(src: String): String {
+        val value = getValue(src)
+        return when (value) {
+            is Double -> "%.2f".format(value)
+            else -> value.toString()
         }
     }
 
+    private fun buildLabelIndex() {
+        current_bytecode.forEachIndexed { index, instr ->
+            if (instr is Bytecode.LABEL) labels[instr.name] = index
+        }
+    }
 }
