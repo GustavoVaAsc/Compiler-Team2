@@ -24,7 +24,11 @@ import android.text.style.ForegroundColorSpan
 import android.text.Spannable
 import android.graphics.Color
 import android.widget.ScrollView
+import unam.fi.compilers.team2.compilerexecuter.BytecodeGenerator
 import unam.fi.compilers.team2.parser.ParserOutputActivity
+import unam.fi.compilers.team2.compilerexecuter.CompileActivity
+import unam.fi.compilers.team2.compilerexecuter.StackVM
+import unam.fi.compilers.team2.intermediate.IntermediateCodeGenerator
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var lineNumbers: TextView
     private lateinit var lexButton: Button
     private lateinit var parseButton: Button
+    private lateinit var compileButton: Button
 
     private fun loadWords(filename: String): List<String> {
         val inputStream = assets.open(filename)
@@ -172,6 +177,7 @@ class MainActivity : AppCompatActivity() {
         lineNumbers = findViewById(R.id.line_numbers)
         lexButton = findViewById(R.id.lex_button)
         parseButton = findViewById(R.id.parse_button)
+        compileButton = findViewById(R.id.compile_button)
 
         val commentColor = Color.parseColor("#88D8B0")
         val stringColor = Color.parseColor("#CBAACB")
@@ -279,6 +285,58 @@ class MainActivity : AppCompatActivity() {
                 val parserOutput = "❌ Parsing failed: ${e.message}"
                 val intent: Intent = Intent(this, ParserOutputActivity::class.java)
                 intent.putExtra("Parser Output", parserOutput)
+                startActivity(intent)
+            }
+        }
+
+        compileButton.setOnClickListener{
+            val code: String = codeInput.text.toString()
+            val lexemes: ArrayList<StringBuilder> = code.lines().map{StringBuilder(it)} as ArrayList<StringBuilder>
+
+            val lexer = unam.fi.compilers.team2.lexer.Lexer(lexemes,this)
+            try{
+                val parser = unam.fi.compilers.team2.parser.Parser(lexer)
+                val program = parser.parseProgram()
+                val semantic = unam.fi.compilers.team2.semantic.SemanticAnalyzer()
+                val semanticErrors = semantic.analyze(program)
+
+                val semanticOutput = StringBuilder("")
+                if(semanticErrors.isNotEmpty()){
+                    semanticOutput.append("❌ Error(s) in semantic analysis: \n\n")
+                    for(error in semanticErrors){
+                        semanticOutput.append(error).append("\n")
+                    }
+                    val intent: Intent = Intent(this, CompileActivity::class.java)
+                    intent.putExtra("Compiler Output", semanticOutput.toString())
+                    startActivity(intent)
+                }else{
+                    val intermediateGen = IntermediateCodeGenerator()
+                    val intermediateCode = intermediateGen.generate(program)
+
+                    val output = StringBuilder("")
+                    for(instruction in intermediateCode){
+                        output.append(instruction).append("\n")
+                    }
+
+                    val bytecodeGen = BytecodeGenerator()
+                    val bytecode = bytecodeGen.generate(intermediateCode)
+
+                    val vm = StackVM()
+                    val vmOutput = vm.execute(bytecode)
+
+                    output.append("\n\n").append("Program execution! \uD83D\uDC7E").append("\n\n")
+                    output.append(vmOutput)
+
+                    val intent: Intent = Intent(this, CompileActivity::class.java)
+                    intent.putExtra("Compiler Output", output.toString())
+                    startActivity(intent)
+                }
+
+
+            }catch(e:Exception){
+                val parserOutput = "❌ Parsing failed: ${e.message}"
+                val intent: Intent = Intent(this, CompileActivity::class.java)
+                intent.putExtra("Compiler Output", parserOutput)
                 startActivity(intent)
             }
         }
