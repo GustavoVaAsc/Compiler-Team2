@@ -163,22 +163,23 @@ Below are images that demonstrate the parser's functionality, including both suc
 > Tests with code snippets that produce errors in the parser.
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.1.jpg)
 ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.2.jpg)
-_What’s wrong?
+ <br>
+ What’s wrong?
 The names are written incorrectly, which causes the parsing to fail since the grammar does not recognize the following misspelled terms:
 
 * `str1ng` instead of `string`
 * `vo1d` instead of `void`
 * `funct1on` instead of `function`
 * `1nt` instead of `int`
-_ <br>
-
+ <br>
 ![Fail 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.1.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.2.jpg)
-_What’s wrong?
+ <br>
+What’s wrong?
 The keyword while is misspelled, so the grammar does not recognize it and the parser fails.
 
 * ‘wh1le’ instead of ‘while’
-_ <br>
+<br>
 
 ### Semantic Analyzer
 Semantic Analyzer's functionality ---------- (PENDIENTE)
@@ -192,14 +193,16 @@ Below are images that demonstrate the functionality of the semantic analyzer, in
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.1.jpg)
 ![Fail 1 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.2.jpg)
 > ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.3.jpg)
-_The function that adds two numbers is declared as void; however, it attempts to return x, which is an integer value. Although the parser does not detect any errors, the code is semantically incorrect because a function declared as void should not return any value.
-_ <br>
+ <br>
+ The function that adds two numbers is declared as void; however, it attempts to return x, which is an integer value. Although the parser does not detect any errors, the code is semantically incorrect because a function declared as void should not return any value.
+<br>
 
 ![Fail 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.1.jpg)
 ![Fail 2 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.2.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.3.jpg)
-_The variable i is declared as an integer (int); however, a string ("Hola") was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
-_ <br>
+<br>
+ The variable i is declared as an integer (int); however, a string ("Hola") was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
+<br>
 
 ### Compiler
 Compiler's functionality ---------- (PENDIENTE)
