@@ -55,6 +55,10 @@ _Finite Automata in Token Recognition:_ Because the lexical structure of most pr
 lexical analyzers often rely on finite automata to identify valid tokens. This is achieved by defining regular expressions for all possible tokens, 
 and then transforming them into a finite automaton (usually a deterministic finite automaton).
 
+_Parser:_ A tool used in natural language processing to analyze and understand the syntactic structure of a sentence or text. The goal of a parser is to determine the relationship between words and phrases in a text and their grammatical function within the context of the entire text. A parser could be defined as a program that analyzes a portion of text to determine its logical structure: the parsing phase in a compiler takes the text of a program and produces a syntax tree that represents the structure of the program.
+
+_Compiler:_ Translates a program written in a high-level programming language (C / C++, COBOL, etc.) into machine language. A compiler typically generates assembly language first and then translates the assembly language into machine language. A utility known as a "linker" combines all the necessary machine language modules into an executable program that can be run on the computer.
+
 
 ## Body
 
