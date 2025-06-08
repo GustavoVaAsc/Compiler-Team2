@@ -27,6 +27,10 @@ sealed class Bytecode {
         override fun toString() = "DIV $dest <- $left / $right"
     }
 
+    data class MOD(val dest: String, val left: String, val right: String) : Bytecode() {
+        override fun toString() = "MOD $dest <- $left % $right"
+    }
+
     // Comparison operations
     data class EQ(val dest: String, val left: String, val right: String) : Bytecode() {
         override fun toString() = "EQ $dest <- $left == $right"

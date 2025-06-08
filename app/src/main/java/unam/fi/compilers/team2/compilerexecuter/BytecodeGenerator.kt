@@ -24,6 +24,7 @@ class BytecodeGenerator {
                         "-"  -> Bytecode.SUB(instr.result, instr.left, instr.right)
                         "*"  -> Bytecode.MUL(instr.result, instr.left, instr.right)
                         "/"  -> Bytecode.DIV(instr.result, instr.left, instr.right)
+                        "%" -> Bytecode.MOD(instr.result, instr.left, instr.right)
                         "==" -> Bytecode.EQ(instr.result, instr.left, instr.right)
                         "!=" -> Bytecode.NEQ(instr.result, instr.left, instr.right)
                         "<"  -> Bytecode.LW(instr.result, instr.left, instr.right)

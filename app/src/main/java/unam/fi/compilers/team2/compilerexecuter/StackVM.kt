@@ -36,6 +36,7 @@ class StackVM {
                 is Bytecode.SUB -> arithmetic(instr, ::handleSub)
                 is Bytecode.MUL -> arithmetic(instr, ::handleMul)
                 is Bytecode.DIV -> arithmetic(instr, ::handleDiv)
+                is Bytecode.MOD -> arithmetic(instr, ::handleMod)
                 is Bytecode.EQ -> compare(instr, ::handleEq)
                 is Bytecode.NEQ -> compare(instr, ::handleNeq)
                 is Bytecode.GEQ -> compare(instr, ::handleGeq)
@@ -73,6 +74,7 @@ class StackVM {
             is Bytecode.SUB -> Triple(instr.dest, instr.left, instr.right)
             is Bytecode.MUL -> Triple(instr.dest, instr.left, instr.right)
             is Bytecode.DIV -> Triple(instr.dest, instr.left, instr.right)
+            is Bytecode.MOD -> Triple(instr.dest, instr.left, instr.right)
             else -> error("Invalid arithmetic instruction")
         }
         val leftVal = getValue(left)
@@ -144,6 +146,14 @@ class StackVM {
             else -> error("Unsupported types for division")
         }
     }
+
+    private fun handleMod(left: Any, right: Any): Any{
+        return when{
+            left is Int && right is Int -> if (right != 0) left % right else 0
+            else -> error("Unsupported types for modulo")
+        }
+    }
+
 
     private fun handleEq(left: Any, right: Any): Boolean {
         return when {
@@ -227,10 +237,10 @@ class StackVM {
 
     private fun getValue(src: String): Any {
         return when {
-            src.startsWith("t") -> registers[src] ?: error("Undefined register $src")
-            src.startsWith("\"") -> src.substring(1, src.length - 1)
             src == "true" -> true
             src == "false" -> false
+            src.startsWith("\"") -> src.substring(1, src.length - 1)
+            src.startsWith("t") -> registers[src] ?: error("Undefined register $src")
             src.toIntOrNull() != null -> src.toInt()
             src.toDoubleOrNull() != null -> src.toDouble()
             else -> {

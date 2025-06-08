@@ -116,7 +116,7 @@ class IntermediateCodeGenerator {
 
         instructions.add(Label(loopLabel))
 
-        // Generate condition
+        // Generate condition// skip else
         val condTemp = visitExpression(node.condition)
 
         // If condition is false, exit
