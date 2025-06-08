@@ -20,16 +20,16 @@ Compiler repository for the subject of compilers (Faculty of Engineering, semest
 
 ## Introduction
 #### Problem statement.
-This project proposes the development of an app composed of a lexical analyzer, a syntax analyzer, and a compiler, using the knowledge acquired during theoretical classes.
+>  This project proposes the development of an app composed of a lexical analyzer, a syntax analyzer, and a compiler, using the knowledge acquired during theoretical classes.
 First, the lexical analyzer will aim to correctly identify and classify the basic lexical elements (tokens) present in the source code, such as identifiers, keywords, and operators. Then, the syntax analyzer will be responsible for validating the grammatical structure of the code, ensuring it follows the syntactic rules of the defined language.
 Finally, the compiler will seek to translate the validated source code into an executable representation, enabling its correct interpretation and execution by a machine or a specific runtime environment.
 With this project, we aim to consolidate the key concepts of the compilation process, from source code analysis to its translation and execution.
 
 #### Motivation.
-The creation of the lexical analyzer, syntax analyzer, and compiler will allow for a comprehensive understanding of the compiler construction process—from identifying the lexical elements of the source code to its final translation. This project will provide an opportunity to unify and practically apply the theoretical concepts discussed in class, helping to deepen the understanding of each stage of the compilation process and highlight its importance in the development of programming languages.
+> The creation of the lexical analyzer, syntax analyzer, and compiler will allow for a comprehensive understanding of the compiler construction process—from identifying the lexical elements of the source code to its final translation. This project will provide an opportunity to unify and practically apply the theoretical concepts discussed in class, helping to deepen the understanding of each stage of the compilation process and highlight its importance in the development of programming languages.
 
 #### Objectives.
-To develop a system composed of a lexical analyzer, a syntax analyzer, and a compiler that can identify and classify tokens, verify the syntactic structure of the source code, and translate it into an executable format, applying the theoretical knowledge acquired in class to gain a practical understanding of how a complete compiler works.
+> To develop a system composed of a lexical analyzer, a syntax analyzer, and a compiler that can identify and classify tokens, verify the syntactic structure of the source code, and translate it into an executable format, applying the theoretical knowledge acquired in class to gain a practical understanding of how a complete compiler works.
 
 ## Theoretical framework 
 _Lexical Analyzer:_ A lexical analyzer is a program that converts the input text into tokens and classifies these tokens into predefined categories. 
@@ -63,7 +63,7 @@ _Compiler:_ Translates a program written in a high-level programming language (C
 ## Body
 
 ### Lexer
-The lexical analyzer was implemented in the Kotlin language and designed to run within an Android application. Its main goal is to process a sequence of lines of source code and transform them into a structured list of lexical tokens, each with its category, line, and column of appearance. It removes comments and applies regular expressions to identify and classify lexical tokens. It uses external resources (Keywords.txt and Datatypes.txt) to define the valid keywords and data types of the language. This provides flexibility, as it allows the behavior to be easily modified or extended by changing the token definitions in the configuration files, enabling the supported language to be updated without altering the lexer’s code.
+The lexical analyzer was implemented in the ```Kotlin``` language and designed to run within an Android application. Its main goal is to process a sequence of lines of source code and transform them into a structured list of lexical tokens, each with its category, line, and column of appearance. It removes comments and applies regular expressions to identify and classify lexical tokens. It uses external resources (Keywords.txt and Datatypes.txt) to define the valid keywords and data types of the language. This provides flexibility, as it allows the behavior to be easily modified or extended by changing the token definitions in the configuration files, enabling the supported language to be updated without altering the lexer’s code.
 The output consists of a list of Token objects containing detailed information about their type and position, facilitating the work of the parser.
 
 Below are images that demonstrate the lexer's functionality, including successful cases and situations where errors occur.
@@ -86,13 +86,13 @@ The parser receives as input the list of tokens generated by the lexical analyze
 
 Each function corresponds to a specific grammar rule. For instance:
 
-*parseProgram() starts the parsing process by calling parseDeclaration() repeatedly.
-*parseDeclaration() determines whether a class, function, or statement is being parsed and delegates accordingly.
-*parseExpression() handles complex expressions by combining operators, groupings, literals, identifiers, and parentheses.
+* ```parseProgram()``` starts the parsing process by calling ```parseDeclaration()``` repeatedly.
+* ```parseDeclaration()``` determines whether a class, function, or statement is being parsed and delegates accordingly.
+* ```parseExpression()``` handles complex expressions by combining operators, groupings, literals, identifiers, and parentheses.
 
 Additionally, the parser implements a derivation logging system (log, logToken) to track how grammar rules are applied step by step. This helps during debugging and offers visual support for understanding how the parser operates internally.
 
-Error handling is also a key feature; the error() method provides precise feedback by pointing to the line and token that caused the issue, improving the debugging experience for users.
+Error handling is also a key feature; the ```error()``` method provides precise feedback by pointing to the line and token that caused the issue, improving the debugging experience for users.
 
 To better illustrate the parser's behavior and its relationship with the language grammar, we include an example of a complete derivation based on a sample input. This derivation reflects how the parser applies context-free grammar rules step by step to analyze and validate code structure.
 
@@ -214,7 +214,7 @@ The names are written incorrectly, which causes the parsing to fail since the gr
 What’s wrong?
 The keyword while is misspelled, so the grammar does not recognize it and the parser fails.
 
-* ‘wh1le’ instead of ‘while’
+* ```wh1le``` instead of ```while```
 <br>
 
 ### Semantic Analyzer
@@ -242,7 +242,7 @@ Below are images that demonstrate the functionality of the semantic analyzer, in
 ![Fail 2 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.2.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.3.jpg)
 <br>
- The variable i is declared as an integer (int); however, a string ("Hola") was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
+ The variable i is declared as an integer (```int```); however, a string (```"Hola"```) was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
 <br>
 
 ### Compiler
@@ -291,14 +291,14 @@ The three core options—Lex, Parse, and Compile—are accessible via buttons:. 
 >### Lex
 
 Upon selecting Lex, the application performs lexical analysis on the input code. The lexer reads the program text character by character to identify valid lexemes, classifying them into tokens such as:
-*Identifiers
-*Keywords
-*Operators
-*Literals
-*Punctuation
+* Identifiers
+* Keywords
+* Operators
+* Literals
+* Punctuation
 
 This process verifies whether the code contains symbols allowed by the defined language. If correct, it outputs a stream of tokens with metadata like line and column numbers.
-_Note:_ Even if the lexical analysis succeeds, syntactic or semantic errors may still occur in later stages.
+_Note: Even if the lexical analysis succeeds, syntactic or semantic errors may still occur in later stages._
 
 >### Parse
 
