@@ -223,6 +223,7 @@ It was decided to create an application due to the ease of access it offers, as 
 Within the application, the user can switch between dark mode and light mode based on their preference.
 > Dark mode <br>
 ![Dark mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Night.jpg)
+<br>
 > Light mode <br>
 ![Light mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Light.jpg)
 
