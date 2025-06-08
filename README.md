@@ -164,14 +164,15 @@ Below are images that demonstrate the parser's functionality, including both suc
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.1.jpg)
 ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.2.jpg)
  <br>
- What’s wrong?
+What’s wrong?
 The names are written incorrectly, which causes the parsing to fail since the grammar does not recognize the following misspelled terms:
 
 * `str1ng` instead of `string`
 * `vo1d` instead of `void`
 * `funct1on` instead of `function`
 * `1nt` instead of `int`
- <br>
+<br>
+
 ![Fail 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.1.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.2.jpg)
  <br>
@@ -193,7 +194,7 @@ Below are images that demonstrate the functionality of the semantic analyzer, in
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.1.jpg)
 ![Fail 1 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.2.jpg)
 > ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.3.jpg)
- <br>
+<br>
  The function that adds two numbers is declared as void; however, it attempts to return x, which is an integer value. Although the parser does not detect any errors, the code is semantically incorrect because a function declared as void should not return any value.
 <br>
 
@@ -216,17 +217,17 @@ Below are images that demonstrate the functionality of the compiler, including b
 ## Results 
 ### Application start
 It was decided to create an application due to the ease of access it offers, as well as being intuitive, easy to use, and visually appealing to the user.
-> App icon
+> App icon <br>
 ![App icon](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/App.jpg)
 
 Within the application, the user can switch between dark mode and light mode based on their preference.
-> Dark mode
+> Dark mode <br>
 ![Dark mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Night.jpg)
-> Light mode
+> Light mode <br>
 ![Light mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Light.jpg)
 
 Within the interface, the buttons Lex, Parse, and Compile are displayed. Depending on the selected button, the application performs the corresponding process. Below are some examples:
-> Buttons
+> Buttons <br>
 ![Buttons](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Buttons.jpg)
 
 -----COMPLETAR RESULTS CON MANUAL--
