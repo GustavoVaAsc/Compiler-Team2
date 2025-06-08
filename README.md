@@ -243,10 +243,13 @@ Below are images that demonstrate the functionality of the compiler, including b
 ## Results 
 ### Application start
 It was decided to create an application due to the ease of access it offers, as well as being intuitive, easy to use, and visually appealing to the user.
+Once downloaded, the application appears on the user’s device with the following icon and name:
 > App icon <br>
 ![App icon](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/App.jpg)
 
-Within the application, the user can switch between dark mode and light mode based on their preference.
+Upon launching the application, the main interface is displayed. This environment includes a text area for entering source code and three primary buttons that correspond to the key functions of the compiler: Lex, Parse, and Compile.
+
+The application also allows users to switch between dark mode and light mode, depending on their visual preference.
 > Dark mode <br>
 ![Dark mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Night.jpg)
 
@@ -254,12 +257,31 @@ Within the application, the user can switch between dark mode and light mode bas
 > Light mode <br>
 ![Light mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Light.jpg)
 
-Within the interface, the buttons Lex, Parse, and Compile are displayed. Depending on the selected button, the application performs the corresponding process. Below are some examples:
+The three core options—Lex, Parse, and Compile—are accessible via buttons:. Depending on the selected button, the application performs the corresponding process.
 > Buttons <br>
 ![Buttons](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Buttons.jpg)
 
------COMPLETAR RESULTS CON MANUAL--
+>Lex
 
+Upon selecting Lex, the application performs lexical analysis on the input code. The lexer reads the program text character by character to identify valid lexemes, classifying them into tokens such as:
+*Identifiers
+*Keywords
+*Operators
+*Literals
+*Punctuation
+
+This process verifies whether the code contains symbols allowed by the defined language. If correct, it outputs a stream of tokens with metadata like line and column numbers.
+_Note:_ Even if the lexical analysis succeeds, syntactic or semantic errors may still occur in later stages.
+
+>Parse
+
+The Parse button takes the tokens produced by the lexer and compares them against the grammar of the language. If the structure of the code conforms to the rules (such as proper nesting, punctuation, and ordering), the parser builds a syntax tree.
+
+If errors are detected, they are flagged with details indicating the location and nature of the error.
+
+>Compile
+
+-----COMPLETAR RESULTS CON MANUAL--
 
 ## Conclusions
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
