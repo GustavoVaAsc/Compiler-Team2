@@ -69,6 +69,9 @@ Below are images that demonstrate the lexer's functionality, including successfu
 ![Test 2 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Lexer%202.jpg)
 
 
+
+
+
 ![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
 ![Test 3 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Lexer%203.jpg)
 
@@ -175,6 +178,9 @@ Below are images that demonstrate the parser's functionality, including both suc
 ![Test 2 - Parser Pt2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.1.jpg)
 
 
+
+
+
 ![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
 ![Test 3 - Parser](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.jpg)
 ![Test 3 - Parser Pt.2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.1.jpg)
@@ -209,6 +215,9 @@ Below are images that demonstrate the functionality of the semantic analyzer, in
 >Tests with code snippets that do not produce any errors in the semantic analyzer.
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Semantic Analyzer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.1.jpg)
+
+
+
 
 
 ![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
@@ -261,7 +270,7 @@ The three core options—Lex, Parse, and Compile—are accessible via buttons:. 
 > Buttons <br>
 ![Buttons](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Buttons.jpg)
 
->Lex
+>### Lex
 
 Upon selecting Lex, the application performs lexical analysis on the input code. The lexer reads the program text character by character to identify valid lexemes, classifying them into tokens such as:
 *Identifiers
@@ -273,13 +282,13 @@ Upon selecting Lex, the application performs lexical analysis on the input code.
 This process verifies whether the code contains symbols allowed by the defined language. If correct, it outputs a stream of tokens with metadata like line and column numbers.
 _Note:_ Even if the lexical analysis succeeds, syntactic or semantic errors may still occur in later stages.
 
->Parse
+>### Parse
 
 The Parse button takes the tokens produced by the lexer and compares them against the grammar of the language. If the structure of the code conforms to the rules (such as proper nesting, punctuation, and ordering), the parser builds a syntax tree.
 
 If errors are detected, they are flagged with details indicating the location and nature of the error.
 
->Compile
+>### Compile
 
 -----COMPLETAR RESULTS CON MANUAL--
 
