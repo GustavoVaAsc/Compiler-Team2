@@ -15,7 +15,7 @@
 **Mexico City, Mexico. June 2025.**
 
 
-# Lexer-Compilers-Team2
+# Compilers-Team2
 Compiler repository for the subject of compilers (Faculty of Engineering, semester 2025-2)
 
 ## Introduction
