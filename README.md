@@ -358,8 +358,23 @@ At this stage, the application checks the logic of the program and runs it accor
 
 To avoid errors, the code must include complete instructions ready to be executed like assignments, loops, and function calls.
 
-> For further guidance on how to use the application and its features, please refer to the attached user manual (
-[User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
+> For further guidance on how to use the application and its features, please refer to the attached user manual ([User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
+
+>###ARMv7 Assembly Code Generation
+The final phase of the compiler involves transforming the intermediate code representation into ARMv7 Assembly instructions, a low-level instruction set commonly used in mobile devices and embedded systems. This step simulates how a real compiler prepares a program for execution on hardware by translating high-level logic into hardware-level instructions.
+
+The TargetCodeGenerator class, implemented in Kotlin, receives a list of intermediate instructions and produces a string of equivalent ARMv7 code. These instructions include assignments, arithmetic operations (both binary and unary), conditional and unconditional jumps, print statements, and return instructions.
+
+To handle variable storage, the generator calculates offsets within the current stack frame. Each user-defined function begins by saving the execution context (pushing frame and return registers), allocates space on the stack, and restores the previous state at the end. It also includes support routines such as _software_divide for division and _print_string for displaying text.
+
+This process completes the compilation flow, showing how the original source code, after lexical, syntactic, and semantic analysis, is translated into a fully executable representation.
+
+>Why do we separate our Bytecode VM simulation from the ARM Assembly instructions?
+Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
+
+>Assembly Simulation
+To test and run the generated assembly code, we used the following online ARM simulator:
+[Simulator](https://cpulator.01xz.net/?sys=arm)
 
 ## Conclusions
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
@@ -374,11 +389,25 @@ Furthermore, implementing each component within a single application made it eas
 
 [4] “LR Parser”. GeeksforGeeks, Mar. 31, 2021.[Online]. Available: [https://www.geeksforgeeks.org/lr-parser/]
 
-[5] “LALR Parser (with Examples)”. GeeksforGeeks, Jun. 24, 2021.[Online]. Available: [https://www.geeksforgeeks.org/lalr-parser-with-examples/]
+[5]"Recursive Descent Parser", GeeksforGeeks, Feb. 5, 2025. [Online]. Available: [https://www.geeksforgeeks.org/recursive-descent-parser/]
 
 [6] “Extended Backus–Naur form”. WIKIPEDIA.[Online]. Available: [https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form]
 
 [7] “The Go Programming Language Specification - Language version go1.24”. GO, Dec. 30, 2024.[Online]. Available: [https://go.dev/ref/spec]
 
 [8] Neso Academy.“LL(1) Parsing - Solved Problems (Set 1)”. Mar. 30, 2023.[Online Video]. Available: [https://www.youtube.com/watch?v=5P7ehgZ6EIs]
+
+[9] Neso Academy, "Problem of Left Recursion and Solution in CFGs", YouTube. Aug. 25, 2022. [Online]. Available: [https://www.youtube.com/watch?v=IO5ie7GbJGI]
+
+[10] "Abstract Syntax Tree (AST) in Java", GeeksforGeeks, Aug. 12, 2021. [Online]. Available: [https://www.geeksforgeeks.org/abstract-syntax-tree-ast-in-java/]
+
+[11] "Semantic Analysis in Compiler Design", GeeksforGeeks, Apr. 22, 2020. [Online]. Available: [https://www.geeksforgeeks.org/semantic-analysis-in-compiler-design/]
+
+[12] "Documentation – Arm Developer". [Online]. Available: [https://developer.arm.com/documentation]
+
+[13] "Kotlin Programming Language", Kotlin. [Online]. Available: [https://kotlinlang.org/]
+
+[14] ConsoleTVs, "VirtualMachine/src/vm.cpp at master · ConsoleTVs/VirtualMachine", GitHub.  [Online]. Available: [https://github.com/ConsoleTVs/VirtualMachine/blob/master/src/vm.cpp]
+
+[15] "Phases of a Compiler", GeeksforGeeks, Jan. 25, 2025. [Online]. Available: [https://www.geeksforgeeks.org/phases-of-a-compiler/]
 
