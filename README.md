@@ -80,14 +80,14 @@ The lexical analyzer was implemented in the ```Kotlin``` language and designed t
 The output consists of a list of Token objects containing detailed information about their type and position, facilitating the work of the parser.
 
 To perform tokenization, the regular expressions we used to identify different elements in the source code was the following:
-Identifiers: [a-zA-Z_][a-zA-Z0-9_]*
-Operators:>>=|<<=|\+=|-=|\*=|/=|%=|&&|\|\||\+\+|--|&=|\|=|\^=|=|!|\+|-|\*|/|%|&|\||\^
-Relational symbols: ==|!=|>=|<=|>|<
-Punctuation marks: \*|\(|\)|\.|,|:|;|\{|\}|->
-Boolean values: \b(true|false)\b
-String literals: "([^"\\]|\\.)*"
-Floating-point numbers: -?\d+\.\d+
-Integers: -?\d+
+* Identifiers: [a-zA-Z_][a-zA-Z0-9_]*
+* Operators:>>=|<<=|\+=|-=|\*=|/=|%=|&&|\|\||\+\+|--|&=|\|=|\^=|=|!|\+|-|\*|/|%|&|\||\^
+* Relational symbols: ==|!=|>=|<=|>|<
+* Punctuation marks: \*|\(|\)|\.|,|:|;|\{|\}|->
+* Boolean values: \b(true|false)\b
+* String literals: "([^"\\]|\\.)*"
+* Floating-point numbers: -?\d+\.\d+
+* Integers: -?\d+
 Below are images that demonstrate the lexer's functionality:
 
 > Tests with code snippets that do not produce any errors in the parser. Example 1:
@@ -379,31 +379,24 @@ This process completes the compilation flow, showing how the original source cod
 Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
 <br>
 
-> Assembly Simulation
-<br>
+> #### Assembly Simulation
 
 What is CPUlator?
 CPUlator is an online simulator that allows you to run and debug programs on architectures such as ARMv7 or MIPS without the need for physical hardware. 
-
 How does it work in general?
-<br>
 
 >### Hardware simulation:
 <br>
-
- CPUlator mimics how a real ARMv7 processor would work, including registers, memory, interrupts, and instruction execution.
+CPUlator mimics how a real ARMv7 processor would work, including registers, memory, interrupts, and instruction execution.
  <br>
 
 >### Source code:
 <br>
-
- You can write programs in Assembly language or C.
- <br>
+You can write programs in Assembly language or C.
 
 >### Compilation and execution:
 <br>
-
- The simulator compiles and runs your code step by step, showing you which instructions are being executed and how the values in the registers and memory change.
+The simulator compiles and runs your code step by step, showing you which instructions are being executed and how the values in the registers and memory change.
 Visual debugging:
 It has an interface where you can see:
 * The processor’s registers (such as R0, R1...).
@@ -417,7 +410,7 @@ To test and run the generated assembly code, we used the following online ARM si
 The sample programs used to test the compiler can be found in the following folder of the repository:
 [Test](https://github.com/GustavoVaAsc/Compiler-Team2/tree/main/app/src/main/assets/ASMOutputs)
 
-## Conclusions
+## Conclusion
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
 Furthermore, implementing each component within a single application made it easier to visualize and understand the complete flow followed by a compiler, from token identification to executable code generation. In summary, the completion of the project made it possible to bridge theory and practice for the correct execution of the created app.
 
