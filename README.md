@@ -90,7 +90,7 @@ Below are images that demonstrate the lexer's functionality:
 
 > Tests with code snippets that do not produce any errors in the parser. Example 1:
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
-![Test 2 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Lexer%202.jpg)
+![Test 2 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Lexer%202%20(fixed).jpg)
 ---
 > Example 2
 <br><br><br>
@@ -356,8 +356,8 @@ At this stage, the application checks the logic of the program and runs it accor
 
 To avoid errors, the code must include complete instructions ready to be executed like assignments, loops, and function calls.
 
-> For further guidance on how to use the application and its features, please refer to the attached user manual
-[User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf)
+> For further guidance on how to use the application and its features, please refer to the attached user manual (
+[User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
 
 ## Conclusions
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
