@@ -394,24 +394,25 @@ Although generating ARMv7 code helps us simulate how real hardware would execute
 
 > #### Assembly Simulation
 
-What is CPUlator?
+> ### What is CPUlator? <br>
 CPUlator is an online simulator that allows you to run and debug programs on architectures such as ARMv7 or MIPS without the need for physical hardware. 
-How does it work in general?
 
->### Hardware simulation:
+> ### How does it work in general? <br>
+
+>#### Hardware simulation:
 <br>
 CPUlator mimics how a real ARMv7 processor would work, including registers, memory, interrupts, and instruction execution.
  <br>
 
->### Source code:
+>#### Source code:
 <br>
 You can write programs in Assembly language or C.
 
->### Compilation and execution:
+>#### Compilation and execution:
 <br>
 The simulator compiles and runs your code step by step, showing you which instructions are being executed and how the values in the registers and memory change.
 
->### Visual debugging:
+>#### Visual debugging:
 It has an interface where you can see:
 * The processor’s registers (such as R0, R1...).
 * The contents of RAM memory.
