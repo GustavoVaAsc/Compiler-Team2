@@ -374,7 +374,9 @@ This process completes the compilation flow, showing how the original source cod
 <br>
 Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
 <br>
+
 > Assembly Simulation
+
 To test and run the generated assembly code, we used the following online ARM simulator:
 [Simulator](https://cpulator.01xz.net/?sys=arm)
 
