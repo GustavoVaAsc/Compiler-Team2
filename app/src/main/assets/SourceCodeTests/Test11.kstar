@@ -1,0 +1,53 @@
+function void main(){
+    int a_uno = 13;
+    int a_dos = 10;
+    int a_tres = -7;
+    int a_cuatro = 2;
+    int a_cinco = -24;
+    int a_seis = 32;
+
+    writeln("Arreglo antes de ordenar: ");
+    writeln(a_uno);
+    writeln(a_dos);
+    writeln(a_tres);
+    writeln(a_cuatro);
+    writeln(a_cinco);
+    writeln(a_seis);
+
+    int _tmp;
+    for (int i = 0; i < 5; i = i + 1){
+        if (a_uno > a_dos) {
+            _tmp = a_uno;
+            a_uno = a_dos;
+            a_dos = _tmp;
+        }
+        if (a_dos > a_tres) {
+            _tmp = a_dos;
+            a_dos = a_tres;
+            a_tres = _tmp;
+        }
+        if (a_tres > a_cuatro) {
+            _tmp = a_tres;
+            a_tres = a_cuatro;
+            a_cuatro = _tmp;
+        }
+        if (a_cuatro > a_cinco) {
+            _tmp = a_cuatro;
+            a_cuatro = a_cinco;
+            a_cinco = _tmp;
+        }
+        if (a_cinco > a_seis) {
+            _tmp = a_cinco;
+            a_cinco = a_seis;
+            a_seis = _tmp;
+        }
+    }
+
+    writeln("Arreglo despues de ordenar: ");
+    writeln(a_uno);
+    writeln(a_dos);
+    writeln(a_tres);
+    writeln(a_cuatro);
+    writeln(a_cinco);
+    writeln(a_seis);
+}

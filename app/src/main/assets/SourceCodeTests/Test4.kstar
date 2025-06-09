@@ -1,9 +1,11 @@
 // Cold or Hot
 
 function void main() {
-	float temperature = 60.5;
+ // _temperature due to a bug with registers
+ // that start with "t"
+	float _temperature = 60.5;
 
-	if (temperature >= 100.0) {
+	if (_temperature >= 100.0) {
 		writeln("Hot :(");
 	} else {
 		writeln("Cold :p");
