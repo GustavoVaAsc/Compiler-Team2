@@ -361,6 +361,7 @@ To avoid errors, the code must include complete instructions ready to be execute
 > For further guidance on how to use the application and its features, please refer to the attached user manual ([User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
 
 >###ARMv7 Assembly Code Generation
+<br>
 The final phase of the compiler involves transforming the intermediate code representation into ARMv7 Assembly instructions, a low-level instruction set commonly used in mobile devices and embedded systems. This step simulates how a real compiler prepares a program for execution on hardware by translating high-level logic into hardware-level instructions.
 
 The TargetCodeGenerator class, implemented in Kotlin, receives a list of intermediate instructions and produces a string of equivalent ARMv7 code. These instructions include assignments, arithmetic operations (both binary and unary), conditional and unconditional jumps, print statements, and return instructions.
@@ -368,10 +369,11 @@ The TargetCodeGenerator class, implemented in Kotlin, receives a list of interme
 To handle variable storage, the generator calculates offsets within the current stack frame. Each user-defined function begins by saving the execution context (pushing frame and return registers), allocates space on the stack, and restores the previous state at the end. It also includes support routines such as _software_divide for division and _print_string for displaying text.
 
 This process completes the compilation flow, showing how the original source code, after lexical, syntactic, and semantic analysis, is translated into a fully executable representation.
-
+<br>
 >Why do we separate our Bytecode VM simulation from the ARM Assembly instructions?
+<br>
 Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
-
+<br>
 >Assembly Simulation
 To test and run the generated assembly code, we used the following online ARM simulator:
 [Simulator](https://cpulator.01xz.net/?sys=arm)
