@@ -61,7 +61,16 @@ _Compiler:_ Translates a program written in a high-level programming language (C
 
 
 ## Body
-### KStar
+### KStar Language
+The custom language implemented in this compiler is mostly based on C, but it modifies several features to align with the goals of our compiler design. It supports basic programming structures such as functions, classes, conditionals, and loops, along with a limited but sufficient set of data types: Integer, Real (float), String, and Boolean.
+However, the language includes a few important restrictions to maintain clarity and reduce complexity:
+*Functions cannot receive parameters. They can only be declared and contain internal logic, but no arguments are passed to them.
+*Functions and classes can be declared but not called. Their presence is structural and used to demonstrate syntax validity.
+*No support for arrays, input statements, or memory-related features like pointers.
+*All data must be initialized and handled directly within the program without runtime input.
+*The language enforces static typing using the supported datatypes listed above.
+
+These constraints simplify both parsing and evaluation, allowing the focus to remain on the core concepts of language structure, syntax rules, and compilation stages.
 
 ### Lexer
 The lexical analyzer was implemented in the ```Kotlin``` language and designed to run within an Android application. Its main goal is to process a sequence of lines of source code and transform them into a structured list of lexical tokens, each with its category, line, and column of appearance. It removes comments and applies regular expressions to identify and classify lexical tokens. It uses external resources (Keywords.txt and Datatypes.txt) to define the valid keywords and data types of the language. This provides flexibility, as it allows the behavior to be easily modified or extended by changing the token definitions in the configuration files, enabling the supported language to be updated without altering the lexer’s code.
