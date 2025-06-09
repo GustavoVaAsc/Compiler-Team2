@@ -24,11 +24,13 @@ import android.text.style.ForegroundColorSpan
 import android.text.Spannable
 import android.graphics.Color
 import android.widget.ScrollView
+import unam.fi.compilers.team2.codegen.TargetCodeGenerator
 import unam.fi.compilers.team2.compilerexecuter.BytecodeGenerator
 import unam.fi.compilers.team2.parser.ParserOutputActivity
 import unam.fi.compilers.team2.compilerexecuter.CompileActivity
 import unam.fi.compilers.team2.compilerexecuter.StackVM
 import unam.fi.compilers.team2.intermediate.IntermediateCodeGenerator
+import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
@@ -312,6 +314,17 @@ class MainActivity : AppCompatActivity() {
                 }else{
                     val intermediateGen = IntermediateCodeGenerator()
                     val intermediateCode = intermediateGen.generate(program)
+
+                    val targetGenerator = TargetCodeGenerator()
+                    val targetCode = targetGenerator.generate(intermediateCode)
+                    try {
+                        val pathString = this.getExternalFilesDir(null)?.path + "/output.s"
+                        val file = File(this.getExternalFilesDir(null)?.path + "/output.s")
+                        file.writeText(targetCode)
+                        println("Assembly code written to: $pathString")
+                    } catch (e: Exception) {
+                        println("Error writing assembly file: ${e.message}")
+                    }
 
                     val output = StringBuilder("")
                     for(instruction in intermediateCode){
