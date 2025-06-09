@@ -8,13 +8,15 @@ import java.io.IOException
 class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
     private lateinit var lexemes:MutableList<StringBuilder> // Lexemes List
     private lateinit var token_stream:MutableList<Token> // Token stream
-    private lateinit var keywords:MutableSet<String>
-    private lateinit var datatypes:MutableSet<String>
+    private lateinit var keywords:MutableSet<String> // Stores Keywords from Keywords.txt
+    private lateinit var datatypes:MutableSet<String> // Stores Datatypes ...
     private lateinit var categories:MutableList<String>
     private lateinit var token_classification:MutableMap<String,MutableSet<String>>
     private var total_tokens:Int = 0
 
+    // Class constructor
     init {
+        // Initialize Data Structures
         this.lexemes = lexemes
         this.keywords = mutableSetOf()
         this.datatypes = mutableSetOf()
@@ -67,18 +69,19 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
         val keywordRegex:Regex= Regex(this.buildRegex(keywords))
         val datatypeRegex:Regex= Regex(this.buildRegex(datatypes))
 
-        // Define other regex
+        // Define the regex for recognizing the other tokens
         val idRegex:Regex = Regex("[a-zA-Z_][a-zA-Z0-9_]*")
         val opRegex = Regex(">>=|<<=|\\+=|-=|\\*=|/=|%=|&&|\\|\\||\\+\\+|--|&=|\\|=|\\^=|=|!|\\+|-|\\*|/|%|&|\\||\\^")
         val relRegex:Regex = Regex("==|!=|>=|<=|>|<")
         val puntRegex = Regex("\\*|\\(|\\)|\\.|,|:|;|\\{|\\}|->")
         val boolRegex = Regex("\\b(true|false)\\b")
-        //val constRegex:Regex = Regex("-?[0-9]+(\\.[0-9]+)?")
         val litRegex:Regex = Regex("\"([^\"\\\\]|\\\\.)*\"")
         val floatRegex = Regex("-?\\d+\\.\\d+")
         val intRegex = Regex("-?\\d+")
 
         var n:Int = this.lexemes.size
+
+        // Iterate all lexemes
         for(i in lexemes.indices){
             // Delete comments
             val lexeme:String = this.lexemes[i].toString()
@@ -90,35 +93,23 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                 lexemes[i] = StringBuilder(clearedLexeme)
             }
 
-            /*
-            val noLitLexeme: String = litRegex.replace(clearedLexeme) { matchResult ->
-                " ".repeat(matchResult.value.length)
-            }.trim()
-
-            val noDatatypeLexeme: String = datatypeRegex.replace(noLitLexeme) { matchResult ->
-                " ".repeat(matchResult.value.length)
-            }
-
-            val noIdentifiersLexeme: String = idRegex.replace(noDatatypeLexeme) { matchResult ->
-                " ".repeat(matchResult.value.length)
-            }
-
-             */
             val lineTokens = mutableListOf<Token>()
 
+            // Inside function, collects the tokens and guarantees they don't overlap
             fun classifyAndCollect(regex: Regex, category: String) {
                 for (match in regex.findAll(clearedLexeme)) {
                     val tokenValue = match.value
                     val col = match.range.first + 1
                     val range = match.range
 
-                    // Skip if overlapping with existing token
+                    // Skip if overlapping with existing token with the line and column
                     if (lineTokens.any {
-                            it.getTokenColumn() - 1 <= range.last &&
+                            it.getTokenColumn() - 1 <= range.last && // We use range to check the entire token
                                     range.first <= (it.getTokenColumn() - 1 + it.getTokenValue().length - 1)
                         }) continue
 
                     val token = when (category) {
+                        // Check if the current token of the ID category is not a reserved word.
                         "Identifier" -> {
                             if (tokenValue !in keywords) Token(category, tokenValue, i + 1, col)
                             else null
@@ -126,6 +117,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                         else -> Token(category, tokenValue, i + 1, col)
                     }
 
+                    // Add them to token_classification
                     token?.let {
                         lineTokens.add(it)
                         token_classification.getOrPut(category) { mutableSetOf() }.add(tokenValue)
@@ -133,20 +125,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
                 }
             }
 
-            /*
-            // TODO: Apply DRY to this:
-            //classifyAndCount(litRegex, clearedLexeme, "Literal", i)
-            classifyAndCount(litRegex, clearedLexeme, "STRING", i)
-            classifyAndCount(keywordRegex, noLitLexeme, "Keyword", i)
-            classifyAndCount(datatypeRegex, noLitLexeme, "Datatype", i)
-            classifyAndCount(boolRegex, noLitLexeme, "Boolean", i)
-            classifyAndCount(relRegex, noLitLexeme, "Relation", i)
-            classifyAndCount(opRegex, noLitLexeme, "Operator", i)
-            classifyAndCount(puntRegex, noLitLexeme, "Punctuation", i)
-            classifyAndCount(floatRegex, noIdentifiersLexeme, "FLOAT", i)
-            classifyAndCount(intRegex, noIdentifiersLexeme, "INTEGER", i)
-            classifyAndCount(idRegex, noDatatypeLexeme, "Identifier", i)
-            */
+            // We process each category, starting by the constant values
             classifyAndCollect(litRegex, "STRING")
             classifyAndCollect(floatRegex, "FLOAT")
             classifyAndCollect(intRegex, "INTEGER")
@@ -162,38 +141,14 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
             lineTokens.sortBy { it.getTokenColumn() }
             token_stream.addAll(lineTokens)
         }
+        this.total_tokens = token_stream.size // Number of tokens processed
         return this.token_stream
     }
 
+    // Function to check if two tokens are overlapping
     fun IntRange.overlaps(other: IntRange): Boolean {
         return this.first <= other.last && other.first <= this.last
     }
 
-    private fun classifyAndCount(regex:Regex, text:String, category:String, line:Int){
-        for(match in regex.findAll(text)){
-            val matchedRanges = mutableSetOf<IntRange>()
-            val token = match.value
-            val col = match.range.first + 1
 
-            val range = match.range
-            if (matchedRanges.any { it.overlaps(range) }) continue
-            matchedRanges.add(range)
-
-            if(category == "Identifier"){
-                if(token !in keywords){
-                    token_classification.getOrPut(category) { mutableSetOf() }.add(token)
-                    this.token_stream.add(Token(category, token, line+1, col))
-                }
-            }else{
-                token_classification.getOrPut(category) { mutableSetOf() }.add(token)
-                this.token_stream.add(Token(category, token, line+1, col))
-            }
-
-            if(token !in keywords || category == "Identifier"){
-                this.total_tokens++
-            }
-        }
-    }
-
-    public fun getTotalTokens():Int = total_tokens
 }
