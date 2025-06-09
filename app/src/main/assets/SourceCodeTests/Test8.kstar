@@ -1,0 +1,18 @@
+function int main(){
+   int n = 1000000000+7;
+   bool flag = true;
+
+   for(int i = 2; i*i <= n; i = i + 1){
+      if(n%i == 0){
+         flag = false;
+      }
+   }
+
+   if(flag == true){
+      writeln("Es primo");
+   }else{
+      writeln("No es primo");
+   }
+
+   return 0;
+}

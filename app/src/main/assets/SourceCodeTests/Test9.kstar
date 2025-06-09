@@ -1,0 +1,8 @@
+function void main(){
+    float PI = 3.14159;
+    float radius = 24.5;
+    float circle_area = PI * radius * radius;
+    writeln("El area de un circulo con radio 24.5 es: ");
+    writeln(circle_area);
+    writeln("cm^2");
+}

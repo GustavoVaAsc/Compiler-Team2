@@ -1,0 +1,7 @@
+function int main(){
+    writeln("Mi nombre es: ");
+    string name = "Yordi :P";
+    writeln(name);
+    return 0;
+}
+
