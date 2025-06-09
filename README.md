@@ -26,7 +26,7 @@ Finally, the compiler will seek to translate the validated source code into an e
 With this project, we aim to consolidate the key concepts of the compilation process, from source code analysis to its translation and execution.
 
 #### Motivation.
-> The creation of the lexical analyzer, syntax analyzer, and compiler will allow for a comprehensive understanding of the compiler construction process—from identifying the lexical elements of the source code to its final translation. This project will provide an opportunity to unify and practically apply the theoretical concepts discussed in class, helping to deepen the understanding of each stage of the compilation process and highlight its importance in the development of programming languages.
+> The creation of the lexical analyzer, syntax analyzer, and compiler will allow for a comprehensive understanding of the compiler construction process from identifying the lexical elements of the source code to its final translation. This project will provide an opportunity to unify and practically apply the theoretical concepts discussed in class, helping to deepen the understanding of each stage of the compilation process and highlight its importance in the development of programming languages.
 
 #### Objectives.
 > To develop a system composed of a lexical analyzer, a syntax analyzer, and a compiler that can identify and classify tokens, verify the syntactic structure of the source code, and translate it into an executable format, applying the theoretical knowledge acquired in class to gain a practical understanding of how a complete compiler works.
@@ -69,6 +69,7 @@ However, the language includes a few important restrictions to maintain clarity 
 * No support for arrays, input statements, or memory-related features like pointers.
 * All data must be initialized and handled directly within the program without runtime input.
 * The language enforces static typing using the supported datatypes listed above.
+* If instruction could not handle "else if"
 
 These constraints simplify both parsing and evaluation, allowing the focus to remain on the core concepts of language structure, syntax rules, and compilation stages.
 
@@ -76,6 +77,15 @@ These constraints simplify both parsing and evaluation, allowing the focus to re
 The lexical analyzer was implemented in the ```Kotlin``` language and designed to run within an Android application. Its main goal is to process a sequence of lines of source code and transform them into a structured list of lexical tokens, each with its category, line, and column of appearance. It removes comments and applies regular expressions to identify and classify lexical tokens. It uses external resources (```Keywords.txt``` and ```Datatypes.txt```) to define the valid keywords and data types of the language. This provides flexibility, as it allows the behavior to be easily modified or extended by changing the token definitions in the configuration files, enabling the supported language to be updated without altering the lexer’s code.
 The output consists of a list of Token objects containing detailed information about their type and position, facilitating the work of the parser.
 
+To perform tokenization, the regular expressions we used to identify different elements in the source code was the following:
+Identifiers: [a-zA-Z_][a-zA-Z0-9_]*
+Operators:>>=|<<=|\+=|-=|\*=|/=|%=|&&|\|\||\+\+|--|&=|\|=|\^=|=|!|\+|-|\*|/|%|&|\||\^
+Relational symbols: ==|!=|>=|<=|>|<
+Punctuation marks: \*|\(|\)|\.|,|:|;|\{|\}|->
+Boolean values: \b(true|false)\b
+String literals: "([^"\\]|\\.)*"
+Floating-point numbers: -?\d+\.\d+
+Integers: -?\d+
 Below are images that demonstrate the lexer's functionality:
 
 > Tests with code snippets that do not produce any errors in the parser. Example 1:
@@ -317,7 +327,7 @@ The application also allows users to switch between dark mode and light mode, de
 > Light mode <br>
 ![Light mode](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/UI%20Light.jpg)
 
-The three core options—Lex, Parse, and Compile—are accessible via buttons:. Depending on the selected button, the application performs the corresponding process.
+The three core options Lex, Parse, and Compile are accessible via buttons:. Depending on the selected button, the application performs the corresponding process.
 > Buttons <br>
 ![Buttons](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Buttons.jpg)
 
@@ -344,7 +354,10 @@ When selected, the Compile button uses code that has already passed lexical and 
 
 At this stage, the application checks the logic of the program and runs it according to the language rules, succesfully simulating the execution of the code. 
 
-To avoid errors, the code must include complete instructions ready to be executed—like assignments, loops, and function calls.
+To avoid errors, the code must include complete instructions ready to be executed like assignments, loops, and function calls.
+
+> For further guidance on how to use the application and its features, please refer to the attached user manual
+[User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf)
 
 ## Conclusions
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
