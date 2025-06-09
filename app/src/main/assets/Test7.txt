@@ -1,0 +1,115 @@
+DERIVATION FOR PROGRAM 7
+
+Program - Declaration*
+
+Declaration - FunctionDeclaration
+
+FunctionDeclaration - 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype - int
+
+Identifier - main
+
+Statement - VariableDeclaration
+
+VariableDeclaration - Datatype Identifier ['=' Expression] ';'
+
+Datatype - int
+
+Identifier - sum
+
+Expression - Assignment
+
+Literal - 0
+
+Statement - VariableDeclaration
+
+VariableDeclaration - Datatype Identifier ['=' Expression] ';'
+
+Datatype - int
+
+Identifier - limit
+
+Expression - Assignment
+
+Literal - 10
+
+Statement - ForStatement
+
+ForStatement - 'for' '(' [init] ';' [cond] ';' [update] ')' '{' Statement* '}'
+
+Expression - Assignment
+
+Literal - 1
+
+Expression - Assignment
+
+Identifier - i
+
+Operator - <=
+
+Identifier - limit
+
+Expression - Assignment
+
+Identifier - i
+
+Operator - +
+
+Literal - 1
+
+Statement - IfStatement
+
+IfStatement - 'if' '(' Expression ')' '{' Statement* '}' ['else' '{' Statement* '}']
+
+Expression - Assignment
+
+Identifier - i
+
+Operator - %
+
+Literal - 2
+
+Operator - ==
+
+Literal - 0
+
+Statement - ExpressionStatement
+
+ExpressionStatement - Expression ';'
+
+Expression - Assignment
+
+Identifier - sum
+
+Identifier - sum
+
+Operator - +
+
+Identifier - i
+
+Statement - PrintStatement
+
+PrintStatement - 'writeln' '(' Expression ')' ';'
+
+Expression - Assignment
+
+Literal - "La suma de los números pares del 1 al 10 es:"
+
+Statement - PrintStatement
+
+PrintStatement - 'writeln' '(' Expression ')' ';'
+
+Expression - Assignment
+
+Identifier - sum
+
+Statement - ReturnStatement
+
+ReturnStatement → 'return' [Expression] ';'
+
+Expression → Assignment
+
+Literal → 0
+
+Identifier - i
