@@ -1,5 +1,8 @@
 package unam.fi.compilers.team2.intermediate
 
+// Intermediate representation of the AST
+// Each type of node has overrode toString() function for debug purposes
+
 sealed class IRInstruction
 
 data class Assign(val target: String, val value: String) : IRInstruction() {
