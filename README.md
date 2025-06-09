@@ -70,6 +70,8 @@ However, the language includes a few important restrictions to maintain clarity 
 * All data must be initialized and handled directly within the program without runtime input.
 * The language enforces static typing using the supported datatypes listed above.
 * If instruction could not handle "else if"
+* Variables that start with 't' cannot be declared
+* Expressions of kind (a == b && b != c || !d ... ) are not supported
 
 These constraints simplify both parsing and evaluation, allowing the focus to remain on the core concepts of language structure, syntax rules, and compilation stages.
 
@@ -359,6 +361,7 @@ At this stage, the application checks the logic of the program and runs it accor
 To avoid errors, the code must include complete instructions ready to be executed like assignments, loops, and function calls.
 
 > For further guidance on how to use the application and its features, please refer to the attached user manual ([User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
+<br>
 
 > ### ARMv7 Assembly Code Generation
 <br>
@@ -370,15 +373,49 @@ To handle variable storage, the generator calculates offsets within the current 
 
 This process completes the compilation flow, showing how the original source code, after lexical, syntactic, and semantic analysis, is translated into a fully executable representation.
 <br>
+
 > Why do we separate our Bytecode VM simulation from the ARM Assembly instructions?
 <br>
 Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
 <br>
 
 > Assembly Simulation
+<br>
+
+What is CPUlator?
+CPUlator is an online simulator that allows you to run and debug programs on architectures such as ARMv7 or MIPS without the need for physical hardware. 
+
+How does it work in general?
+<br>
+
+>### Hardware simulation:
+<br>
+
+ CPUlator mimics how a real ARMv7 processor would work, including registers, memory, interrupts, and instruction execution.
+ <br>
+
+>### Source code:
+<br>
+
+ You can write programs in Assembly language or C.
+ <br>
+
+>### Compilation and execution:
+<br>
+
+ The simulator compiles and runs your code step by step, showing you which instructions are being executed and how the values in the registers and memory change.
+Visual debugging:
+It has an interface where you can see:
+* The processor’s registers (such as R0, R1...).
+* The contents of RAM memory.
+* The instructions being executed.
+* Options to step through the code, reset the system, or run the entire program.
 
 To test and run the generated assembly code, we used the following online ARM simulator:
 [Simulator](https://cpulator.01xz.net/?sys=arm)
+
+The sample programs used to test the compiler can be found in the following folder of the repository:
+[Test](https://github.com/GustavoVaAsc/Compiler-Team2/tree/main/app/src/main/assets/ASMOutputs)
 
 ## Conclusions
 With the developed application, it was possible to apply, unify, and implement in practice all the concepts covered in the course, from the construction of the lexical analyzer to the final creation of the compiler. This process not only reinforced the theoretical knowledge acquired in class but also helped to understand the relationship between each stage of the compilation process and its importance in the development of programming languages.
