@@ -64,11 +64,11 @@ _Compiler:_ Translates a program written in a high-level programming language (C
 ### KStar Language
 The custom language implemented in this compiler is mostly based on C, but it modifies several features to align with the goals of our compiler design. It supports basic programming structures such as functions, classes, conditionals, and loops, along with a limited but sufficient set of data types: Integer, Real (float), String, and Boolean.
 However, the language includes a few important restrictions to maintain clarity and reduce complexity:
-*Functions cannot receive parameters. They can only be declared and contain internal logic, but no arguments are passed to them.
-*Functions and classes can be declared but not called. Their presence is structural and used to demonstrate syntax validity.
-*No support for arrays, input statements, or memory-related features like pointers.
-*All data must be initialized and handled directly within the program without runtime input.
-*The language enforces static typing using the supported datatypes listed above.
+* Functions cannot receive parameters. They can only be declared and contain internal logic, but no arguments are passed to them.
+* Functions and classes can be declared but not called. Their presence is structural and used to demonstrate syntax validity.
+* No support for arrays, input statements, or memory-related features like pointers.
+* All data must be initialized and handled directly within the program without runtime input.
+* The language enforces static typing using the supported datatypes listed above.
 
 These constraints simplify both parsing and evaluation, allowing the focus to remain on the core concepts of language structure, syntax rules, and compilation stages.
 
