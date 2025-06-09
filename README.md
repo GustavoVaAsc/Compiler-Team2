@@ -397,7 +397,8 @@ You can write programs in Assembly language or C.
 >### Compilation and execution:
 <br>
 The simulator compiles and runs your code step by step, showing you which instructions are being executed and how the values in the registers and memory change.
-Visual debugging:
+
+>### Visual debugging:
 It has an interface where you can see:
 * The processor’s registers (such as R0, R1...).
 * The contents of RAM memory.
