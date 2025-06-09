@@ -31,34 +31,47 @@ With this project, we aim to consolidate the key concepts of the compilation pro
 #### Objectives.
 > To develop a system composed of a lexical analyzer, a syntax analyzer, and a compiler that can identify and classify tokens, verify the syntactic structure of the source code, and translate it into an executable format, applying the theoretical knowledge acquired in class to gain a practical understanding of how a complete compiler works.
 
-## Theoretical framework 
-_Lexical Analyzer:_ A lexical analyzer is a program that converts the input text into tokens and classifies these tokens into predefined categories. 
+## Theoretical Framework
+
+**_Lexical Analyzer:_**  
+A lexical analyzer is a program that converts the input text into tokens and classifies these tokens into predefined categories.  
 The lexical analyzer plays a crucial role in the analysis phase, as it provides the tokens to the parser to facilitate syntax analysis.
 
-_Token:_ A token is a sequence of characters grouped into a single entity. Each token represents a set of character sequences that convey a specific meaning.\
-Classification:
-* Keywords
-* Identifiers
-* Literals
-* Operators
-* Punctuation
-* Special characters
-*  Constants
-  
-_Lexical Errors:_ A lexical error happens when the lexer finds an invalid sequence of characters that cannot be classified as an actual token.
+**_Token:_**  
+A token is a sequence of characters grouped into a single entity. Each token represents a set of character sequences that convey a specific meaning.  
+**Classification:**
+- Keywords  
+- Identifiers  
+- Literals  
+- Operators  
+- Punctuation  
+- Special characters  
+- Constants
+
+**_Lexical Errors:_**  
+A lexical error happens when the lexer finds an invalid sequence of characters that cannot be classified as an actual token.  
 These errors tend to happen due to exceeding length of numeric constants, identifiers that are way too long, illegal characters, and others.
 
-_Finite Automata:_ A finite automata is an abstract machine that recognizes patterns by processing symbols step by step, transitioning between
-a finite number of states. It determines if this input should be accepted or rejected based on the final state it reaches.
+**_Finite Automata:_**  
+A finite automaton is an abstract machine that recognizes patterns by processing symbols step by step, transitioning between a finite number of states. It determines if the input should be accepted or rejected based on the final state it reaches.
 
-_Finite Automata in Token Recognition:_ Because the lexical structure of most programming languages can be described using a regular language,
-lexical analyzers often rely on finite automata to identify valid tokens. This is achieved by defining regular expressions for all possible tokens, 
-and then transforming them into a finite automaton (usually a deterministic finite automaton).
+**_Finite Automata in Token Recognition:_**  
+Because the lexical structure of most programming languages can be described using a regular language, lexical analyzers often rely on finite automata to identify valid tokens. This is achieved by defining regular expressions for all possible tokens, and then transforming them into a finite automaton (usually a deterministic finite automaton).
 
-_Parser:_ A tool used in natural language processing to analyze and understand the syntactic structure of a sentence or text. The goal of a parser is to determine the relationship between words and phrases in a text and their grammatical function within the context of the entire text. A parser could be defined as a program that analyzes a portion of text to determine its logical structure: the parsing phase in a compiler takes the text of a program and produces a syntax tree that represents the structure of the program.
+**_Parser:_**  
+A parser is a program that analyzes the syntactic structure of a given text based on a formal grammar. It receives tokens from the lexical analyzer and organizes them into a parse tree or syntax tree, representing the hierarchical syntactic structure of the source code.
 
-_Compiler:_ Translates a program written in a high-level programming language (C / C++, COBOL, etc.) into machine language. A compiler typically generates assembly language first and then translates the assembly language into machine language. A utility known as a "linker" combines all the necessary machine language modules into an executable program that can be run on the computer.
+**_Abstract Syntax Tree (AST):_**  
+An Abstract Syntax Tree is a hierarchical tree representation of the abstract syntactic structure of source code. Unlike a concrete syntax tree, the AST omits syntax-specific details such as parentheses and semicolons, focusing on the logical structure of the code. It is used by compilers and interpreters during semantic analysis and code generation to reason about program constructs like expressions, statements, functions, and control structures.
 
+**_Three Address Code (TAC):_**  
+Three Address Code is an intermediate representation used in compilers. Each instruction in TAC involves at most three operands and represents a simple operation, typically in the form: `x = y op z`. It is more abstract than assembly but closer to machine code than high-level source code. TAC simplifies the process of optimization and code generation by breaking complex statements into basic operations.
+
+**_Compiler:_**  
+A compiler translates a program written in a high-level programming language (e.g., C, C++, COBOL) into machine language. A compiler typically generates assembly language first and then translates the assembly into machine code. A utility known as a linker combines all the necessary machine language modules into an executable program.
+
+**_Assembly Language:_**  
+Assembly language is a low-level programming language that provides a symbolic representation of a computer’s machine code instructions. Each assembly instruction corresponds closely to a single machine instruction, making it suitable for fine-tuned hardware-level programming. In the compilation process, high-level language code is often translated into assembly before being converted into machine code.
 
 ## Body
 ### KStar Language
