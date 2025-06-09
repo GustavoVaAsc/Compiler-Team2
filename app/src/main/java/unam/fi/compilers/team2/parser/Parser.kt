@@ -3,174 +3,212 @@ package unam.fi.compilers.team2.parser
 import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
-
-class Parser(private val lexer: Lexer) {
+// Recursive Descent Parser implementation
+class Parser(private val lexer: Lexer) { // Gets the parser as input of the constructor
+    // We call Lexer's tokenize() method
     private val tokens: List<Token> = lexer.tokenize()
-    private var current: Int = 0
+    private var current: Int = 0 // Current position in token stream
 
+    // Output of derivation rules
     val derivation = StringBuilder()
     private var indentLevel = 0
 
+    // Append normal rules derivation
     private fun log(rule: String) {
         derivation.appendLine(rule)
         derivation.appendLine()
     }
 
+    // Append the derived rules with token cases
     private fun logToken(name: String, value: String) {
         derivation.appendLine("$name → $value")
         derivation.appendLine()
     }
 
-
+    // Main function to start parsing
     fun parseProgram(): Program {
-        log("Program → Declaration*")
+        log("Program → Declaration*") // Log first rule
         indentLevel++
-        val declarations = mutableListOf<ASTNode>()
+        val declarations = mutableListOf<ASTNode>() // Store declarations
+        // For each declaration we call parseDeclaration() and we add the result to the list
         while (!isAtEnd()) {
             declarations.add(parseDeclaration())
         }
         indentLevel--
-        return Program(declarations)
+        return Program(declarations) // Return the root node
     }
 
+    // Function to parse declaration
     private fun parseDeclaration(): ASTNode {
+        // Return based on the type of declaration
         return when (peek().getTokenValue()) {
+            // Class parsing
             "class" -> {
                 log("Declaration → ClassDeclaration")
-                parseClassDeclaration()
+                parseClassDeclaration() // Call Class parsing function
             }
+            // Function parsing
             "function" -> {
                 log("Declaration → FunctionDeclaration")
-                parseFunctionDeclaration()
+                parseFunctionDeclaration() // Call Function parsing function
             }
+            // In any other case, it is a statement
             else -> {
                 log("Declaration → Statement")
-                parseStatement()
+                parseStatement() // Call Statement parsing function
             }
         }
     }
 
-
+    // Parse the class declaration
     private fun parseClassDeclaration(): ClassDeclaration {
         log("ClassDeclaration → 'class' Identifier '{' Declaration* '}'")
         indentLevel++
-        val classToken = consume("class", "Expect 'class'.")
-        val name = consumeType("Identifier", "Expect class name.")
+        val classToken = consume("class", "Expect 'class'.") // Consume the token for class keyword
+        val name = consumeType("Identifier", "Expect class name.") // Consume the token for class identifier
         logToken("Identifier", name.getTokenValue())
 
+        // Consume the body of the class
         consume("{", "Expect '{' before class body.")
-        val members = mutableListOf<ASTNode>()
+        val members = mutableListOf<ASTNode>() // Members of the class
+
+        // We parse every declaration until we reach "}"
         while (!check("}")) {
             members.add(parseDeclaration())
         }
-        consume("}", "Expect '}' after class body.")
+        consume("}", "Expect '}' after class body.") // Consume the bracket close
         indentLevel--
-        return ClassDeclaration(name.getTokenValue(), members,classToken)
+        return ClassDeclaration(name.getTokenValue(), members,classToken) // Return a class declaration Node of the AST
     }
 
+    // Parse the function declaration
     private fun parseFunctionDeclaration(): FunctionDeclaration {
         log("FunctionDeclaration → 'function' Datatype Identifier '(' ')' '{' Statement* '}'")
         indentLevel++
-        consume("function", "Expect 'function'.")
+        consume("function", "Expect 'function'.") // Consume function keyword
 
+        // Get the return type token or an error with consume
         val returnTypeToken = consumeType("Datatype", "Expect return type.")
         logToken("Datatype", returnTypeToken.getTokenValue())
-        val returnType = returnTypeToken.getTokenValue()
+        val returnType = returnTypeToken.getTokenValue() // Get the value (ID/value) of the return token
 
+        // Consume the function name
         val nameToken = consumeType("Identifier", "Expect function name.")
         logToken("Identifier", nameToken.getTokenValue())
-        val name = nameToken.getTokenValue()
+        val name = nameToken.getTokenValue() // Get the name based on the token
 
-        consume("(", "Expect '('.")
-        consume(")", "Expect ')'.")
-        consume("{", "Expect '{' before function body.")
-        val body = mutableListOf<ASTNode>()
+        consume("(", "Expect '('.") // Consume left parentheses
+        consume(")", "Expect ')'.") // Consume right parentheses
+        consume("{", "Expect '{' before function body.") // Consume left bracket
+        val body = mutableListOf<ASTNode>() // Function statements
         while (!check("}")) {
-            body.add(parseStatement())
+            body.add(parseStatement()) // We parse each statement
         }
-        consume("}", "Expect '}' after function body.")
+        consume("}", "Expect '}' after function body.") // Consume right bracket
         indentLevel--
-        return FunctionDeclaration(returnType, name, body)
+        return FunctionDeclaration(returnType, name, body) // We return a Function AST node
     }
 
+    // Function to parse statements
     private fun parseStatement(): Statement {
         indentLevel++
+        // We get the statement based on its Keyword
         val stmt = when {
+            // If statement case
             peek().getTokenValue() == "if" -> {
                 log("Statement → IfStatement")
-                parseIfStatement()
+                parseIfStatement() // Call IfStatement parser function
             }
+            // While statement case
             peek().getTokenValue() == "while" -> {
                 log("Statement → WhileStatement")
-                parseWhileStatement()
+                parseWhileStatement() // Call WhileStatement parser function
             }
+            // For statement case
             peek().getTokenValue() == "for" -> {
                 log("Statement → ForStatement")
-                parseForStatement()
+                parseForStatement() // Call ForStatement parser function
             }
+            // Return statement case
             peek().getTokenValue() == "return" -> {
                 log("Statement → ReturnStatement")
-                parseReturnStatement()
+                parseReturnStatement() // Call Return Statement parser function
             }
+            // PrintStatement case
             peek().getTokenValue() == "writeln" -> {
                 log("Statement → PrintStatement")
-                parsePrintStatement()
+                parsePrintStatement() // Call PrintStatement parser function
             }
+            // Datatype case
             peek().getTokenType() == "Datatype" -> {
                 log("Statement → VariableDeclaration")
-                parseVarDecl()
+                parseVarDecl() // Parse variable declaration
             }
             else -> {
                 log("Statement → ExpressionStatement")
-                parseExpressionStatement()
+                parseExpressionStatement() // In the other case we parse a expression
             }
         }
         indentLevel--
-        return stmt
+        return stmt // The node returned is based on the choice
     }
 
 
-
+    // Variable declaration statement parser
     private fun parseVarDecl(): VariableDeclaration {
         log("VariableDeclaration → Datatype Identifier ['=' Expression] ';'")
         indentLevel++
-        val typeToken = advance()
+        val typeToken = advance() // Get the datatype token
         logToken("Datatype", typeToken.getTokenValue())
 
+        // Get the variable identifier
         val name = consumeType("Identifier", "Expect variable name.")
         logToken("Identifier", name.getTokenValue())
 
+        // Check if the variable equals to an expression to parse
         val initializer = if (match("=")) parseExpression() else null
-        consume(";", "Expect ';' after variable declaration.")
+        consume(";", "Expect ';' after variable declaration.") // Consume ;
         indentLevel--
         return VariableDeclaration(typeToken.getTokenValue(), name.getTokenValue(), initializer, typeToken)
     }
 
-
+    // IfStatement parser
     private fun parseIfStatement(): IfStatement {
         log("IfStatement → 'if' '(' Expression ')' '{' Statement* '}' ['else' '{' Statement* '}']")
         indentLevel++
+        // Consume if statement
         val ifToken = consume("if", "Expect 'if'.")
+        // Consume the parentheses
         consume("(", "Expect '('.")
-        val condition = parseExpression()
+        val condition = parseExpression() // Parse the expression inside the parentheses
         consume(")", "Expect ')'.")
+
+        // Then block start, we consume "{"
         val thenStartToken = consume("{", "Expect '{'.")
-        val thenBranch = mutableListOf<ASTNode>()
+        val thenBranch = mutableListOf<ASTNode>() // Statements
         while (!check("}")) {
-            thenBranch.add(parseStatement())
+            thenBranch.add(parseStatement()) // Parse all statements
         }
+        // Consume end of the block
         consume("}", "Expect '}' after then branch.")
+
+        // Process else branch if exists
         val elseBranch = if (match("else")) {
             val elseToken = previous()
-            val elseStartToken = consume("{", "Expect '{'.")
-            val elseStmts = mutableListOf<ASTNode>()
+            val elseStartToken = consume("{", "Expect '{'.") // Consume block start
+            val elseStmts = mutableListOf<ASTNode>() // List of else statements
+
+            // Parse and add the statements until we reach the end of the block
             while (!check("}")) {
                 elseStmts.add(parseStatement())
             }
+            // Conssume the end of the block
             consume("}", "Expect '}' after else branch.")
             elseStmts
         } else null
         indentLevel--
+
+        // Return IfStatement AST node
         return IfStatement(condition, thenBranch, elseBranch, token = ifToken)
     }
 

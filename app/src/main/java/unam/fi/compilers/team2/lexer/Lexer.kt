@@ -95,7 +95,7 @@ class Lexer (lexemes:ArrayList<StringBuilder>, context:Context){
 
             val lineTokens = mutableListOf<Token>()
 
-            // Inside function, collects the tokens and guarantees they don't overlap
+            // Inner function, collects the tokens and guarantees they don't overlap
             fun classifyAndCollect(regex: Regex, category: String) {
                 for (match in regex.findAll(clearedLexeme)) {
                     val tokenValue = match.value

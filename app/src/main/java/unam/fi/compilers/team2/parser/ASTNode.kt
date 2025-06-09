@@ -2,10 +2,12 @@ package unam.fi.compilers.team2.parser
 
 import unam.fi.compilers.team2.lexer.Token
 
-// Base class
+// Base class of the Abstract Syntax Tree, optional token to track lines.
+// Each type of node has overrode toString() function for debug purposes
+
 sealed class ASTNode(open val token: Token? = null)
 
-// Program
+// Program (root node)
 data class Program(val declarations: List<ASTNode>, override val token:Token? = null) : ASTNode(token) {
     override fun toString() = "Program(declarations=[\n${declarations.joinToString(",\n")}\n])"
 }
@@ -28,7 +30,6 @@ sealed class Statement : ASTNode()
 data class ExpressionStatement(val expr: Expression) : Statement() {
     override fun toString() = "ExpressionStatement(expr=$expr)"
 }
-
 
 data class Assignment(val name: String, val value: Expression, override val token:Token?) : Expression() {
     override fun toString() = "Assignment(name='$name', value=$value)"
