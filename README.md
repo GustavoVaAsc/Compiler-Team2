@@ -76,19 +76,18 @@ These constraints simplify both parsing and evaluation, allowing the focus to re
 The lexical analyzer was implemented in the ```Kotlin``` language and designed to run within an Android application. Its main goal is to process a sequence of lines of source code and transform them into a structured list of lexical tokens, each with its category, line, and column of appearance. It removes comments and applies regular expressions to identify and classify lexical tokens. It uses external resources (Keywords.txt and Datatypes.txt) to define the valid keywords and data types of the language. This provides flexibility, as it allows the behavior to be easily modified or extended by changing the token definitions in the configuration files, enabling the supported language to be updated without altering the lexer’s code.
 The output consists of a list of Token objects containing detailed information about their type and position, facilitating the work of the parser.
 
-Below are images that demonstrate the lexer's functionality, including successful cases and situations where errors occur.
+Below are images that demonstrate the lexer's functionality:
 
 > Tests with code snippets that do not produce any errors in the parser.
+> Example 1
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Lexer%202.jpg)
 ---
-<br><br>
-![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
+<br><br><br>
+> Example 2
+![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%204%20night.jpg)
 ![Test 3 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Lexer%203.jpg)
 
-
-> Tests with code snippets that produce errors in the lexer.
--------------- (PENDIENTE)----------------------------------------------------------------------
 
 ### Parser
 Our parser was implemented using a top-down recursive descent approach, where each method represents a grammar rule defined for the language. This strategy allows for a clean, readable implementation tightly aligned with the grammar structure, making it ideal for LL(1) parsers.
@@ -198,20 +197,23 @@ Identifier -> x
 Below are images that demonstrate the parser's functionality, including both successful cases and situations where errors occur, allowing us to observe how the parser detects them.
 
 > Tests with code snippets that do not produce any errors in the parser.
+> Example 1
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Parser](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.jpg)
 ![Test 2 - Parser Pt2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.1.jpg)
 ---
-<br><br>
-![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
+<br><br><br>
+> Example 2
+![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%204%20night.jpg)
 ![Test 3 - Parser](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.jpg)
 ![Test 3 - Parser Pt.2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.1.jpg)
 
 > Tests with code snippets that produce errors in the parser.
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.1.jpg)
 ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.2.jpg)
- <br>
-What’s wrong?
+<br>
+
+What’s wrong? <br>
 The names are written incorrectly, which causes the parsing to fail since the grammar does not recognize the following misspelled terms:
 
 * `str1ng` instead of `string`
@@ -224,7 +226,8 @@ The names are written incorrectly, which causes the parsing to fail since the gr
 ![Fail 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.1.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%202.2.jpg)
  <br>
-What’s wrong?
+
+What’s wrong?<br>
 The keyword while is misspelled, so the grammar does not recognize it and the parser fails.
 
 * ```wh1le``` instead of ```while```
@@ -233,10 +236,10 @@ The keyword while is misspelled, so the grammar does not recognize it and the pa
 ### Semantic Analyzer
 The semantic analyzer was implemented in Kotlin and is responsible for performing semantic validation of the Abstract Syntax Tree (AST) generated by the parser. Its main role is to ensure that the code complies with the language rules, including type validation and the correct use of variables, functions, classes, and control structures.
 The analyzer uses a symbol table to track declared identifiers (variables, functions, classes) across different scopes. It performs checks to detect errors such as:
-*Redefinition of identifiers
-*Use of undeclared variables
-*Type incompatibilities in assignments, expressions, and return statements
-*Invalid conditions in control structures such as if, while, and for
+* Redefinition of identifiers
+* Use of undeclared variables
+* Type incompatibilities in assignments, expressions, and return statements
+* Invalid conditions in control structures such as if, while, and for
 
 In addition, the analyzer infers types in expressions and verifies type compatibility using helper methods. Errors are collected with precise line numbers to facilitate debugging.
 The output consists of a list of detailed semantic error messages.
