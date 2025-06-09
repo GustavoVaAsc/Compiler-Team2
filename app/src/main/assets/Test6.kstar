@@ -1,4 +1,5 @@
-// Basic operators and for bucle
+// Basic operators and for bucle (Semantically valid, it will
+// not compile due to the lack of main() function
 
 class MathUtils {
     function int square() {
