@@ -4,6 +4,9 @@ import unam.fi.compilers.team2.lexer.Token
 import unam.fi.compilers.team2.lexer.Lexer
 
 // Recursive Descent Parser implementation
+
+// When consume() is equal to a val we are parsing a Lexer's token
+
 class Parser(private val lexer: Lexer) { // Gets the parser as input of the constructor
     // We call Lexer's tokenize() method
     private val tokens: List<Token> = lexer.tokenize()
@@ -212,98 +215,130 @@ class Parser(private val lexer: Lexer) { // Gets the parser as input of the cons
         return IfStatement(condition, thenBranch, elseBranch, token = ifToken)
     }
 
+    // Parse while statement
     private fun parseWhileStatement(): WhileStatement {
         log("WhileStatement → 'while' '(' Expression ')' '{' Statement* '}'")
         indentLevel++
+
+        // Consume while keyword
         val whileToken  = consume("while", "Expect 'while'.")
+
+        // Consume both parentheses and parse the expression inside
         consume("(", "Expect '('.")
         val condition = parseExpression()
         consume(")", "Expect ')'.")
+
+        // Consume the body start token
         val bodyStartToken = consume("{", "Expect '{'.")
-        val body = mutableListOf<ASTNode>()
+        val body = mutableListOf<ASTNode>() // Statements inside while loop
         while (!check("}")) {
-            body.add(parseStatement())
+            body.add(parseStatement()) // Parse each statement inside
         }
-        consume("}", "Expect '}' after body.")
+        consume("}", "Expect '}' after body.") // Consume block end
         indentLevel--
-        return WhileStatement(condition, body, token = whileToken)
+        return WhileStatement(condition, body, token = whileToken) // Return WhileStatement AST node
     }
 
+    // Parse for statement
     private fun parseForStatement(): ForStatement {
         log("ForStatement → 'for' '(' [init] ';' [cond] ';' [update] ')' '{' Statement* '}'")
         indentLevel++
+
+        // Consume keyword
         val forToken = consume("for", "Expect 'for'.")
-        consume("(", "Expect '('.")
-        val init = if (check(";")) {
+        consume("(", "Expect '('.") // Consume left parentheses
+
+        // Initializer: for(int i=0; (...)
+        val init = if (check(";")) { // If we found ";" we advance to next expression
             advance()
             null
         } else {
+            // Check if the variable is defined inside declaration, if it is, we parse it without semicolon
             if (peek().getTokenType() == "Datatype") parseVarDeclNoSemi() else {
+                // Parse the init expression
                 val expr = parseExpression()
-                consume(";", "Expect ';' after initializer.")
+                consume(";", "Expect ';' after initializer.") // Consume ";"
                 expr
             }
         }
-        val condition = if (check(";")) null else parseExpression()
-        consume(";", "Expect ';' after condition.")
-        val update = if (check(")")) null else parseExpression()
-        consume(")", "Expect ')' after for clauses.")
-        val bodyStartToken  = consume("{", "Expect '{'.")
-        val body = mutableListOf<ASTNode>()
+
+        // Condition: for(..., i<=n, ...);
+        val condition = if (check(";")) null else parseExpression() // Check if condition exists
+        consume(";", "Expect ';' after condition.") // Consume ";" to advance
+
+        // Update: for(...;...;i=i+2)
+        val update = if (check(")")) null else parseExpression() // Parse the expression if exists
+        consume(")", "Expect ')' after for clauses.") // Consume ")"
+        val bodyStartToken  = consume("{", "Expect '{'.") // Consume block start
+        val body = mutableListOf<ASTNode>() // Statements inside for
+
+        // Parse every statement until we reach the block end
         while (!check("}")) {
             body.add(parseStatement())
         }
-        consume("}", "Expect '}' after body.")
+        consume("}", "Expect '}' after body.") // Consume block end
         indentLevel--
-        return ForStatement(init, condition, update, body, token = forToken)
+        return ForStatement(init, condition, update, body, token = forToken) // Return for AST node
     }
 
+    // Parse declarations to use in for loop
     private fun parseVarDeclNoSemi(): VariableDeclaration {
         val type = advance().getTokenValue()
         val name = consumeType("Identifier", "Expect variable name.").getTokenValue()
         val initializer = if (match("=")) parseExpression() else null
         consume(";", "Expect ';' after variable declaration.")
-        return VariableDeclaration(type, name, initializer)
+        return VariableDeclaration(type, name, initializer) // Return VariableDeclaration node
     }
 
+    // Parse return statements
     private fun parseReturnStatement(): ReturnStatement {
         log("ReturnStatement → 'return' [Expression] ';'")
         indentLevel++
+        // Consume return keyword
         val returnToken = consume("return", "Expect 'return'.")
+        // Parse expression if exists (we could have void return)
         val value = if (!check(";")) parseExpression() else null
         consume(";", "Expect ';' after return.")
         indentLevel--
-        return ReturnStatement(value, returnToken)
+        return ReturnStatement(value, returnToken) // Return ReturnStatement AST node
     }
 
+    // Parse program outputs
     private fun parsePrintStatement(): PrintStatement {
         log("PrintStatement → 'writeln' '(' Expression ')' ';'")
         indentLevel++
-        consume("writeln", "Expect 'writeln'.")
-        consume("(", "Expect '(' after 'writeln'.")
-        val value = parseExpression()
+        consume("writeln", "Expect 'writeln'.") // Consume writeln function id
+        consume("(", "Expect '(' after 'writeln'.") // Consume open bracket
+        val value = parseExpression() // Parse expression inside writeln
+
+        // Consume ) and ;
         consume(")", "Expect ')' after expression.")
         consume(";", "Expect ';' after statement.")
         indentLevel--
-        return PrintStatement(value)
+        return PrintStatement(value) // Return PrintStatement AST node
     }
 
+    // Parse expression statement
     private fun parseExpressionStatement(): Statement {
         log("ExpressionStatement → Expression ';'")
         indentLevel++
+        // Parse expression
         val expr = parseExpression()
         consume(";", "Expect ';' after expression.")
         indentLevel--
-        return ExpressionStatement(expr)
+        return ExpressionStatement(expr) // Return ExpStatement AST node
     }
 
+    // Parse Expression
     private fun parseExpression(): Expression {
         log("Expression → Assignment")
         indentLevel++
+        // Call parse Assignment
         val expr = parseAssignment()
         indentLevel--
         return expr
     }
+
 
     private fun parseAssignment(): Expression {
         val expr = parseLogicalOr()
