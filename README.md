@@ -287,7 +287,7 @@ The variable i is declared as an integer (```int```); however, a string (```"Hol
 <br>
 
 ### Compiler
-When the user requests compilation, the entered code is internally processed through a lexical and syntactic analyzer that transforms the text into an Abstract Syntax Tree (AST). This tree is then translated into an intermediate representation in the form of bytecode instructions. These instructions are interpreted by a stack-based virtual machine (StackVM), which simulates the execution of the program.
+When the user requests compilation, the entered code is internally processed through a lexical and syntactic analyzer that transforms the text into an Abstract Syntax Tree (AST). This tree is then translated into an intermediate representation, which translates into two types of target code: ARMv7 assembly or a simulated Bytecode we created to execute the program in the aoo. These instructions (Bytecode) are interpreted by a stack-based virtual machine (StackVM), which simulates the execution of the program.
 
 This virtual machine manages registers, local variables, and a call stack to enable function execution. It also supports arithmetic and logical operations, conditional jumps, type conversions, and data output.
 
