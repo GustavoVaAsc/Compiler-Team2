@@ -1,0 +1,13 @@
+// Boolean expressions and if conditional
+
+function void testLogic() {
+    bool a = true;
+    bool b = false;
+    bool result = a && !b || (a == b);
+
+    if (result) {
+        writeln("Condition met");
+    } else {
+        writeln("Condition failed");
+    }
+}

@@ -1,0 +1,11 @@
+// Basic operators and for bucle
+
+class MathUtils {
+    function int square() {
+        int result = 0;
+        for (int i = 0; i < 10; i = i + 1) {
+            result = result + i * i;
+        }
+        return result;
+    }
+}

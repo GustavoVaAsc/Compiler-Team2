@@ -1,0 +1,81 @@
+DERIVATION FOR PROGRAM 6 
+
+Program - Declaration*
+
+Declaration - ClassDeclaration
+
+ClassDeclaration - 'class' Identifier '{' Declaration* '}'
+
+Identifier - MathUtils
+
+Declaration - FunctionDeclaration
+
+FunctionDeclaration - 'function' Datatype Identifier '(' ')' '{' Statement* '}'
+
+Datatype - int
+
+Identifier - square
+
+Statement - VariableDeclaration
+
+VariableDeclaration - Datatype Identifier ['=' Expression] ';'
+
+Datatype - int
+
+Identifier - result
+
+Expression - Assignment
+
+Literal - 0
+
+Statement - ForStatement
+
+ForStatement - 'for' '(' [init] ';' [cond] ';' [update] ')' '{' Statement* '}'
+
+Expression - Assignment
+
+Literal - 0
+
+Expression - Assignment
+
+Identifier - i
+
+Operator - <
+
+Literal - 10
+
+Expression - Assignment
+
+Identifier - i
+
+Identifier - i
+
+Operator - +
+
+Statement → ExpressionStatement
+
+ExpressionStatement → Expression ';'
+
+Expression → Assignment
+
+Identifier → result
+
+Identifier → result
+
+Operator → +
+
+Identifier → i
+
+Operator → *
+
+Identifier → i
+
+Statement → ReturnStatement
+
+ReturnStatement → 'return' [Expression] ';'
+
+Expression → Assignment
+
+Identifier → result
+
+Literal - 1
