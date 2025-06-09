@@ -360,7 +360,7 @@ To avoid errors, the code must include complete instructions ready to be execute
 
 > For further guidance on how to use the application and its features, please refer to the attached user manual ([User Manual](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Compiler_Manual.pdf))
 
->###ARMv7 Assembly Code Generation
+> ### ARMv7 Assembly Code Generation
 <br>
 The final phase of the compiler involves transforming the intermediate code representation into ARMv7 Assembly instructions, a low-level instruction set commonly used in mobile devices and embedded systems. This step simulates how a real compiler prepares a program for execution on hardware by translating high-level logic into hardware-level instructions.
 
@@ -370,11 +370,11 @@ To handle variable storage, the generator calculates offsets within the current 
 
 This process completes the compilation flow, showing how the original source code, after lexical, syntactic, and semantic analysis, is translated into a fully executable representation.
 <br>
->Why do we separate our Bytecode VM simulation from the ARM Assembly instructions?
+> Why do we separate our Bytecode VM simulation from the ARM Assembly instructions?
 <br>
 Although generating ARMv7 code helps us simulate how real hardware would execute the program, it's difficult to run and visualize that code directly on Android devices. To address this, we also implemented a Bytecode Virtual Machine (StackVM) within the app to simulate program behavior and provide immediate feedback. This dual system allows us to meet our target of compiling down to real hardware-level instructions while still keeping the process interactive and educational for users.
 <br>
->Assembly Simulation
+> Assembly Simulation
 To test and run the generated assembly code, we used the following online ARM simulator:
 [Simulator](https://cpulator.01xz.net/?sys=arm)
 
