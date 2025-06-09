@@ -78,13 +78,12 @@ The output consists of a list of Token objects containing detailed information a
 
 Below are images that demonstrate the lexer's functionality:
 
-> Tests with code snippets that do not produce any errors in the parser.
-> Example 1
+> Tests with code snippets that do not produce any errors in the parser. Example 1:
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Lexer%202.jpg)
 ---
-<br><br><br>
 > Example 2
+<br><br><br>
 ![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%204%20night.jpg)
 ![Test 3 - Lexer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Lexer%203.jpg)
 
@@ -196,19 +195,20 @@ Identifier -> x
 <br><br>
 Below are images that demonstrate the parser's functionality, including both successful cases and situations where errors occur, allowing us to observe how the parser detects them.
 
-> Tests with code snippets that do not produce any errors in the parser.
-> Example 1
+> Tests with code snippets that do not produce any errors in the parser. Example 1:
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Parser](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.jpg)
 ![Test 2 - Parser Pt2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.1.jpg)
 ---
-<br><br><br>
+
 > Example 2
+<br><br><br>
 ![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%204%20night.jpg)
 ![Test 3 - Parser](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.jpg)
 ![Test 3 - Parser Pt.2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.1.jpg)
 
 > Tests with code snippets that produce errors in the parser.
+> <br><br><br>
 ![Fail 1](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.1.jpg)
 ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Parsing%20Error%201.2.jpg)
 <br>
@@ -246,13 +246,14 @@ The output consists of a list of detailed semantic error messages.
 
 Below are images that demonstrate the functionality of the semantic analyzer, including both successful cases and situations where errors occur, allowing us to observe how the semantic analyzer detects them.
 
->Tests with code snippets that do not produce any errors in the semantic analyzer.
+>Tests with code snippets that do not produce any errors in the semantic analyzer. Example 1:
 ![Test 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20night.jpg)
 ![Test 2 - Semantic Analyzer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%202%20-Parser%202.1.jpg)
 ---
-<br><br>
+> Example 2:
+<br><br><br>
 
-![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20night.jpg)
+![Test 3](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%204%20night.jpg)
 ![Test 3 - Semantic Analyzer](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Test%203%20-Parser%203.1.jpg)
 
 > Tests with code snippets that produce errors in the semantic analyzer.
@@ -260,15 +261,17 @@ Below are images that demonstrate the functionality of the semantic analyzer, in
 ![Fail 1 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.2.jpg)
 > ![Fail 1 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%201.3.jpg)
 <br>
- The function that adds two numbers is declared as void; however, it attempts to return x, which is an integer value. Although the parser does not detect any errors, the code is semantically incorrect because a function declared as void should not return any value.
----
+What’s wrong? <br>
+The function that adds two numbers is declared as void; however, it attempts to return x, which is an integer value. Although the parser does not detect any errors, the code is semantically incorrect because a function declared as void should not return any value.
+> 
 <br><br>
 
 ![Fail 2](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.1.jpg)
 ![Fail 2 - Parsing Completed](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.2.jpg)
 ![Fail 2 - Message](https://github.com/GustavoVaAsc/Compiler-Team2/blob/main/app/src/main/assets/Screenshots/Semantic%20Error%202.3.jpg)
 <br>
- The variable i is declared as an integer (```int```); however, a string (```"Hola"```) was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
+What’s wrong? <br>
+The variable i is declared as an integer (```int```); however, a string (```"Hola"```) was assigned to it. Although this does not produce errors during parsing, it is semantically incorrect because the assigned data type does not match the declared type.
 <br>
 
 ### Compiler
