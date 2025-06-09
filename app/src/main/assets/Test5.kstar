@@ -1,4 +1,4 @@
-// Boolean expressions and if conditional
+// Boolean expressions and if conditional (Semantically valid only for now)
 
 function void testLogic() {
     bool a = true;
